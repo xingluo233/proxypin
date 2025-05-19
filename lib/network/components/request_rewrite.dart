@@ -91,7 +91,14 @@ class RequestRewriteInterceptor extends Interceptor {
 
     if (rewriteRule?.type == RuleType.requestUpdate) {
       var rewriteItems = await manager.getRewriteItems(rewriteRule!);
-      rewriteItems?.where((item) => item.enabled).forEach((item) => _updateRequest(request, item));
+      if (rewriteItems == null) {
+        return;
+      }
+      for (var item in rewriteItems) {
+        if (item.enabled) {
+          await _updateRequest(request, item);
+        }
+      }
     }
   }
 
@@ -115,7 +122,15 @@ class RequestRewriteInterceptor extends Interceptor {
 
     if (rewriteRule.type == RuleType.responseUpdate) {
       var rewriteItems = await manager.getRewriteItems(rewriteRule);
-      rewriteItems?.where((item) => item.enabled).forEach((item) => _updateMessage(response, item));
+      if (rewriteItems == null) {
+        return;
+      }
+
+      for (var item in rewriteItems) {
+        if (item.enabled) {
+          await _updateMessage(response, item);
+        }
+      }
     }
   }
 
@@ -176,7 +191,7 @@ class RequestRewriteInterceptor extends Interceptor {
   }
 
   //修改消息
-  _updateMessage(HttpMessage message, RewriteItem item) async {
+  Future<void> _updateMessage(HttpMessage message, RewriteItem item) async {
     if (item.type == RewriteType.updateBody && message.body != null) {
       String body = (await message.decodeBodyString()).replaceAllMapped(RegExp(item.key!), (match) {
         if (match.groupCount > 0 && item.value?.contains("\$1") == true) {
