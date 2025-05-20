@@ -65,6 +65,8 @@ class Channel {
   bool isWriting = false;
 
   Object? error; //异常
+  //是否使用代理
+  bool useProxy = false;
 
   Channel(this._socket)
       : _id = DateTime.now().millisecondsSinceEpoch + Random().nextInt(999999),
@@ -129,16 +131,16 @@ class Channel {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    if (isWriting) {
-      logger.w("[$id] write busy");
-    }
-
     isWriting = true;
     try {
       if (!isClosed) {
         _socket.add(bytes);
       }
-      await _socket.flush();
+      if (isWriting) {
+        logger.i("[$id] write busy");
+      } else {
+        await _socket.flush();
+      }
     } catch (e, t) {
       if (e is StateError && e.message == "StreamSink is closed") {
         logger.w("[$id] $remoteSocketAddress write error channel is closed $e", stackTrace: t);
@@ -168,7 +170,9 @@ class Channel {
       await Future.delayed(const Duration(milliseconds: 150));
     }
     isOpen = false;
-    await _socket.flush();
+    if (!isWriting) {
+      await _socket.flush();
+    }
     await _socket.close();
     _socket.destroy();
   }

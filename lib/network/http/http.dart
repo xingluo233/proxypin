@@ -29,6 +29,9 @@ import 'http_headers.dart';
 ///定义HTTP消息的接口，为HttpRequest和HttpResponse提供公共属性。
 ///@author WangHongEn
 abstract class HttpMessage {
+  /// HTTP/1.1
+  static const String http1Version = "HTTP/1.1";
+
   ///内容类型
   static final Map<String, ContentType> contentTypes = {
     "javascript": ContentType.js,
@@ -196,7 +199,17 @@ class HttpRequest extends HttpMessage {
     return hostAndPort?.domain;
   }
 
-  String get requestUrl => HostAndPort.startsWithScheme(uri) ? uri : '${remoteDomain()}$uri';
+  String get requestUrl {
+    if (HostAndPort.startsWithScheme(uri)) {
+      return uri;
+    }
+
+    if (method == HttpMethod.connect) {
+      return "${hostAndPort?.scheme ?? 'http://'}$uri";
+    }
+
+    return '${remoteDomain()}$uri';
+  }
 
   /// 请求的uri
   Uri? _requestUri;

@@ -165,6 +165,7 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
                               '3. 增加自动已读标记；\n'
                               '4. 工具箱支持AES加解密；\n'
                               '5. 修复WebSocket解析错误, 以及二进制支持下载；\n'
+                              '6. 修复部分代理转发失败问题；\n'
                           : 'Tips：By default, HTTPS packet capture will not be enabled. Please install the certificate before enabling HTTPS packet capture。\n'
                               'Click HTTPS Capture packets(Lock icon)，Choose to install the root certificate and follow the prompts to proceed。\n\n'
                               '1. Support for HTTP2 protocol, which can be enabled in settings.\n'
@@ -172,6 +173,7 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
                               '3. Added auto read marking.'
                               '4. Toolbox now supports AES encryption and decryption.'
                               '5. Fixed WebSocket parsing errors.'
+                              '6. Fix some proxy forwarding failure issues.'
                               '',
                       style: const TextStyle(fontSize: 14))));
         });

@@ -116,6 +116,14 @@ class HttpProxyChannelHandler extends ChannelHandler<HttpRequest> {
         await redirect(channelContext, channel, request, redirectUrl!);
         return;
       }
+
+      //http1 直接请求  不需要携带域名
+      if (!remoteChannel.useProxy &&
+          request.protocolVersion == HttpMessage.http1Version &&
+          request.uri.startsWith(HostAndPort.httpScheme)) {
+        final requestUri = request.requestUri!;
+        request.uri = "${requestUri.path}${requestUri.hasQuery ? '?${requestUri.query}' : ''}";
+      }
       await remoteChannel.write(channelContext, request);
     }
   }
@@ -159,6 +167,7 @@ class HttpProxyChannelHandler extends ChannelHandler<HttpRequest> {
     if (remote != null || proxyInfo != null) {
       HostAndPort connectHost = remote ?? HostAndPort.host(proxyInfo!.host, proxyInfo.port!);
       final proxyChannel = await connectRemote(channelContext, clientChannel, connectHost);
+      proxyChannel.useProxy = true;
 
       //代理建立完连接判断是否是https 需要发起connect请求
       if (httpRequest.method == HttpMethod.connect) {
