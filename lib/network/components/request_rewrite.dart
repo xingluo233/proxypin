@@ -279,6 +279,7 @@ class RequestRewriteInterceptor extends Interceptor {
 
         message.body = await FileRead.readFile(item.bodyFile!);
         message.headers.contentLength = message.body!.length;
+        message.headers.remove(HttpHeaders.CONTENT_ENCODING);
         return;
       }
 
@@ -286,6 +287,7 @@ class RequestRewriteInterceptor extends Interceptor {
         message.body =
             message.charset == 'utf-8' || message.charset == 'utf8' ? utf8.encode(item.body!) : item.body?.codeUnits;
         message.headers.contentLength = message.body!.length;
+        message.headers.remove(HttpHeaders.CONTENT_ENCODING);
       }
       return;
     }
