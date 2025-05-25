@@ -209,9 +209,9 @@ class Client extends Network {
       {Duration timeout = const Duration(seconds: 3)}) async {
     String host = hostAndPort.host;
     //说明支持ipv6
-    if (host.startsWith("[") && host.endsWith(']')) {
-      host = host.substring(1, host.length - 1);
-    }
+    // if (host.startsWith("[") && host.endsWith(']')) {
+    //   host = host.substring(1, host.length - 1);
+    // }
 
     return Socket.connect(host, hostAndPort.port, timeout: timeout).then((socket) {
       if (socket.address.type != InternetAddressType.unix) {

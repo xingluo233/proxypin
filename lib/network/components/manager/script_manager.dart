@@ -371,6 +371,8 @@ async function onResponse(context, request, response) {
       request.headers.set(key, value);
     });
 
+    request.headers.remove(HttpHeaders.CONTENT_ENCODING);
+
     //判断是否是二进制
     if (Lists.getElementType(map['body']) == int) {
       request.body = Lists.convertList<int>(map['body']);

@@ -29,7 +29,10 @@ dependencies:
   permission_handler: ^12.0.0+1
   flutter_toastr: ^1.0.3
   share_plus: ^10.1.4
-  flutter_js: 0.8.2
+  flutter_js:
+    git:
+      url: https://github.com/abner/flutter_js
+      ref: master
   flutter_code_editor:
     git:
       url: https://github.com/wanghongenpin/flutter-code-editor.git
