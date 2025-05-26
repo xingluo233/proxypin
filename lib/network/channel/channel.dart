@@ -131,16 +131,16 @@ class Channel {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
+    if (isWriting) {
+      logger.d("[$id] write busy");
+    }
+
     isWriting = true;
     try {
       if (!isClosed) {
         _socket.add(bytes);
       }
-      if (isWriting) {
-        logger.i("[$id] write busy");
-      } else {
-        await _socket.flush();
-      }
+
     } catch (e, t) {
       if (e is StateError && e.message == "StreamSink is closed") {
         logger.w("[$id] $remoteSocketAddress write error channel is closed $e", stackTrace: t);

@@ -358,7 +358,8 @@ async function onResponse(context, request, response) {
 
     var requestUri = request.requestUri!.replace(path: map['path'], query: query);
     if (requestUri.isScheme('https')) {
-      request.uri = requestUri.path + (requestUri.hasQuery ? '?${requestUri.query}' : '');
+      var query = requestUri.query;
+      request.uri = requestUri.path + (query.isNotEmpty ? '?${requestUri.query}' : '');
     } else {
       request.uri = requestUri.toString();
     }
