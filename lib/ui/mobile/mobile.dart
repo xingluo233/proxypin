@@ -441,6 +441,8 @@ class RequestPageState extends State<RequestPage> {
 
       if (retry > 3) {
         if (context.mounted) {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(localizations.remoteConnectDisconnect),
               action: SnackBarAction(

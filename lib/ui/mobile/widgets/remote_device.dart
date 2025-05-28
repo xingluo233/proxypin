@@ -123,7 +123,10 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
                         leading: const Icon(Icons.qr_code_scanner_outlined),
                         dense: true,
                         title: Text(localizations.scanCode),
-                        onTap: () => connectRemote(context))),
+                        onTap: () {
+                          Navigator.maybePop(context);
+                          connectRemote();
+                        })),
                 CustomPopupMenuItem(
                     height: 32,
                     child: ListTile(
@@ -351,7 +354,7 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
   }
 
   ///扫码连接
-  connectRemote(BuildContext context) async {
+  connectRemote() async {
     AppLocalizations localizations = AppLocalizations.of(context)!;
     String? scanRes = await QrCodeScanner.scan(context);
     if (scanRes == null) return;
@@ -372,9 +375,10 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
       var port = uri.queryParameters['port'];
 
       doConnect(host!, int.parse(port!));
+      return;
     }
 
-    if (context.mounted) {
+    if (mounted) {
       FlutterToastr.show(localizations.invalidQRCode, context);
     }
   }
