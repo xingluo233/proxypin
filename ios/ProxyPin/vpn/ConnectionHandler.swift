@@ -45,10 +45,13 @@ class ConnectionHandler {
         switch ipHeader.protocolNumber {
             case ProtocolType.tcp.rawValue:
                 handleTCPPacket(packet: clientPacketData, ipHeader: ipHeader)
-           case ProtocolType.udp.rawValue:
-               handleUDPPacket(clientPacketData: clientPacketData, ipHeader: ipHeader)
+                break
+            case ProtocolType.udp.rawValue:
+                handleUDPPacket(clientPacketData: clientPacketData, ipHeader: ipHeader)
+                break
             case ProtocolType.icmp.rawValue:
                 handleICMPPacket(clientPacketData: &clientPacketData, ipHeader: ipHeader)
+                break
             default:
                 os_log("Unsupported IP protocol: %d", log: OSLog.default, type: .error, ipHeader.protocolNumber)
         }
@@ -91,13 +94,17 @@ class ConnectionHandler {
         }
 
         synchronized(connection) {
-//             os_log("Received UDP packet", log: OSLog.default, type: .default)
+            os_log("handle UDP Packet %{public}@", log: OSLog.default, type: .default, connection.description)
             if newSession {
                 ioService.registerSession(connection: connection)
             }
 
             let payload = clientPacketData.subdata(in: UDPPacketFactory.UDP_HEADER_LENGTH..<clientPacketData.count)
 
+            if ((payload.count + UDPPacketFactory.UDP_HEADER_LENGTH) != udpHeader.length) {
+                os_log("UDP  %{public}@  packet length mismatch: expected %d, got %d", log: OSLog.default, type: .error, connection.description, udpHeader.length, payload.count)
+            }
+//             os_log("Received UDP packet", log: OSLog.default, type: .default)
             connection.lastIpHeader = ipHeader
             connection.lastUdpHeader = udpHeader
             manager.addClientData(data: payload, connection: connection)
@@ -116,24 +123,20 @@ class ConnectionHandler {
             return
         }
         
-//        printByteArray(packet)
-        
         let dataLength = tcpHeader.payload?.count ?? 0
         let sourceIP = ipHeader.sourceIP
         let destinationIP = ipHeader.destinationIP
         let sourcePort = tcpHeader.sourcePort
         let destinationPort = tcpHeader.destinationPort
 
-//         os_log("Handling TCP packet for %{public}@ flags:%d", log: OSLog.default, type: .default, Connection.getConnectionKey(nwProtocol: .TCP, destIp: destinationIP, destPort: destinationPort, sourceIp: sourceIP, sourcePort: sourcePort), tcpHeader.flags)
+        let key = Connection.getConnectionKey(nwProtocol: .TCP, destIp: destinationIP, destPort: destinationPort, sourceIp: sourceIP, sourcePort: sourcePort)
         
         if (tcpHeader.isSYN()) {
-//            os_log("Received SYN packet %{public}@ seq:%u", log: OSLog.default, type: .default, Connection.getConnectionKey(nwProtocol: .TCP, destIp: destinationIP, destPort: destinationPort, sourceIp: sourceIP, sourcePort: sourcePort), tcpHeader.sequenceNumber)
+            os_log("Received SYN packet %{public}@ seq:%u", log: OSLog.default, type: .default, key, tcpHeader.sequenceNumber)
             // 3-way handshake + create new session
             replySynAck(ipHeader: ipHeader, tcpHeader: tcpHeader)
         } else if (tcpHeader.isACK()) {
-
-            let key = Connection.getConnectionKey(nwProtocol: .TCP, destIp: destinationIP, destPort: destinationPort, sourceIp: sourceIP, sourcePort: sourcePort)
-//             os_log("Received ACK packet for key: %{public}@", log: OSLog.default, type: .debug, key)
+//            os_log("Received ACK packet for key: %{public}@", log: OSLog.default, type: .debug, key)
 
             guard let connection = manager.getConnectionByKey(key: key) else {
                 os_log("Ack for unknown session: %{public}@", log: OSLog.default, type: .default, key)
@@ -150,24 +153,19 @@ class ConnectionHandler {
                 connection.lastTcpHeader = tcpHeader
 
                 if dataLength > 0 {
-//                    initProxyConnect(packet: packet, destinationIP: destinationIP, destinationPort: destinationPort, connection: connection)
-//                     os_log("Received data packet %{public}@ length:%d seq:%u", log: OSLog.default, type: .default, connection.description, dataLength, tcpHeader.sequenceNumber)
-                    //accumulate data from client
+//                     os_log("Received data packet %{public}@ length:%d seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, dataLength, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
                     manager.addClientData(data: tcpHeader.payload!, connection: connection)
-                        
-                    //send ack to client only if new data was added
                     sendAck(ipHeader: ipHeader, tcpHeader: tcpHeader, acceptedDataLength: dataLength, connection: connection)
-
                 } else {
-//                     os_log("Received ACK packet %{public}@ seq:%u", log: OSLog.default, type: .default, connection.description, tcpHeader.sequenceNumber)
-                    //an ack from client for previously sent data
-                    acceptAck(tcpHeader: tcpHeader, connection: connection)
-                    if connection.isClosingConnection {
-                        sendFinAck(ipHeader: ipHeader, tcpHeader: tcpHeader, connection: connection)
-                    } else if connection.isAckedToFin && !tcpHeader.isFIN() {
-                        //the last ACK from client after FIN-ACK flag was sent
-                        manager.closeConnection(nwProtocol: .TCP, ip: destinationIP, port: destinationPort, srcIp: sourceIP, srcPort: sourcePort)
-                    }
+                    os_log("Received ACK packet %{public}@ seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
+                }
+
+                acceptAck(tcpHeader: tcpHeader, connection: connection)
+                
+                if connection.isClosingConnection {
+                    sendFinAck(ipHeader: ipHeader, tcpHeader: tcpHeader, connection: connection)
+                } else if connection.isAckedToFin && !tcpHeader.isFIN() {
+                    manager.closeConnection(nwProtocol: .TCP, ip: destinationIP, port: destinationPort, srcIp: sourceIP, srcPort: sourcePort)
                 }
 
                 //received the last segment of data from vpn client
@@ -274,7 +272,7 @@ class ConnectionHandler {
             let ackData = TCPPacketFactory.createResponseAckData(ipHeader: ipHeader, tcpHeader: tcpHeader, ackToClient: ackNumber)
             self.write(data: ackData)
 
-//           os_log("Sent ACK packet to client %{public}@:%{public}d ack# %{public}d", log: OSLog.default, type: .debug, PacketUtil.intToIPAddress(ipHeader.destinationIP), tcpHeader.destinationPort, ackNumber)
+//            os_log("Sent ACK packet to client %{public}@ ack: %u", log: OSLog.default, type: .default, connection.description, ackNumber)
         }
     }
 
@@ -325,7 +323,7 @@ class ConnectionHandler {
                 self.ioService.registerSession(connection: connection)
             }
             self.write(data: packet.buffer)
-//             os_log("SYN-ACK packet length:%d sent", log: OSLog.default, type: .default, packet.buffer.count)
+//             os_log("SYN-ACK %{public}@ packet length:%d sent ack:%u", log: OSLog.default, type: .default, connection.description, packet.buffer.count, tcpTransport.ackNumber)
         }
     }
 

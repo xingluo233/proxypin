@@ -28,6 +28,7 @@ import 'package:proxypin/network/components/manager/request_rewrite_manager.dart
 import 'package:proxypin/network/components/manager/script_manager.dart';
 import 'package:proxypin/network/http/http_client.dart';
 import 'package:proxypin/network/util/logger.dart';
+import 'package:proxypin/ui/component/app_dialog.dart';
 import 'package:proxypin/ui/component/qrcode/qr_scan_view.dart';
 import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/component/widgets.dart';
@@ -58,7 +59,12 @@ class RemoteModel {
 
   factory RemoteModel.fromJson(Map<String, dynamic> json) {
     return RemoteModel(
-        connect: json['connect'], host: json['host'], port: json['port'], os: json['os'], hostname: json['hostname']);
+        connect: json['connect'],
+        host: json['host'],
+        port: json['port'],
+        os: json['os'],
+        hostname: json['hostname'],
+        ipProxy: json['ipProxy'] == true);
   }
 
   RemoteModel copyWith({
@@ -87,7 +93,7 @@ class RemoteModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {'connect': connect, 'host': host, 'port': port, 'os': os, 'hostname': hostname};
+    return {'connect': connect, 'host': host, 'port': port, 'os': os, 'hostname': hostname, 'ipProxy': ipProxy};
   }
 }
 
@@ -390,6 +396,7 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
   Future<bool> doConnect(String host, int port, {bool? ipProxy}) async {
     if (doConnecting) return false;
     doConnecting = true;
+
     try {
       var response = await HttpClients.get("http://$host:$port/ping", timeout: const Duration(milliseconds: 3000));
       if (response.bodyAsString == "pong") {
@@ -424,11 +431,9 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
     } catch (e) {
       logger.e(e);
       if (mounted) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(content: Text(localizations.remoteConnectFail));
-            });
+        if (mounted) {
+          CustomToast.error(localizations.remoteConnectFail).show(context, alignment: Alignment.topCenter);
+        }
       }
       return false;
     } finally {

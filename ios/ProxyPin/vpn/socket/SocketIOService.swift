@@ -28,29 +28,35 @@ class SocketIOService {
         queue.async(flags: .barrier) {
             self.shutdown = true
         }
-        queue.suspend()
+//        queue.suspend()
     }
 
     //从connection接受数据 写到client
     public func registerSession(connection: Connection) {
+        
         connection.channel!.stateUpdateHandler = { state in
+//             os_log("Connection %{public}@ state changed to %{public}@", log: OSLog.default, type: .default, connection.description, String(describing: state))
             switch state {
 
             case .ready:
                 connection.isConnected = true
                 os_log("Connected to %{public}@ on receiveMessage", log: OSLog.default, type: .default, connection.description)
+
                 //接受远程服务器的数据
                 connection.sendToDestination()
                 self.receiveMessage(connection: connection)
             case .cancelled:
                 connection.isConnected = false
-//                os_log("Connection cancelled", log: OSLog.default, type: .default)
+                os_log("Connection cancelled  %{public}@", log: OSLog.default, type: .default, connection.description)
                 connection.closeConnection()
+                self.sendFin(connection: connection)
             case .failed(let error):
                 connection.isConnected = false
-                os_log("Failed to connect: %{public}@", log: OSLog.default, type: .error, error.localizedDescription)
+                os_log("Failed to connect: %{public}@ %{public}@", log: OSLog.default, type: .error,connection.description, error.localizedDescription)
                 connection.closeConnection()
+                self.sendFin(connection: connection)
             default:
+                os_log("Connection %{public}@ entered unhandled state: %{public}@", log: OSLog.default, type: .default, connection.description, String(describing: state))
                 break
             }
         }
@@ -84,14 +90,14 @@ class SocketIOService {
             return
         }
 
-        queue.async {
-            guard let channel = connection.channel else {
-                os_log("Invalid channel type", log: OSLog.default, type: .error)
-                return
-            }
-            
-            channel.receive(minimumIncompleteLength: 0, maximumLength: Self.maxReceiveBufferSize) { (data, context, isComplete, error) in
-//                os_log("Received TCP data packet %{public}@ length %d", log: OSLog.default, type: .default, connection.description, data?.count ?? 0)
+        guard let channel = connection.channel else {
+            os_log("Invalid channel type", log: OSLog.default, type: .error)
+            return
+        }
+        
+        channel.receive(minimumIncompleteLength: 1, maximumLength: Self.maxReceiveBufferSize) { (data, context, isComplete, error) in
+            self.queue.async(flags: .barrier) {
+                os_log("Received TCP data packet %{public}@ length %d", log: OSLog.default, type: .default, connection.description, data?.count ?? 0)
                 if let error = error {
                     os_log("Failed to read from TCP socket: %@", log: OSLog.default, type: .error, error as CVarArg)
                     self.sendFin(connection: connection)
@@ -109,7 +115,6 @@ class SocketIOService {
                 self.receiveMessage(connection: connection)
                 
                 if (isComplete) {
-                    self.sendFin(connection: connection)
                     connection.isAbortingConnection = true
                     return
                 }
@@ -158,6 +163,10 @@ class SocketIOService {
     }
 
     private func sendFin(connection: Connection) {
+        if (connection.nwProtocol != .TCP) {
+            return
+        }
+        
         guard let ipHeader = connection.lastIpHeader, let tcpHeader = connection.lastTcpHeader else {
             os_log("Invalid ipHeader or tcpHeader", log: OSLog.default, type: .error)
             return
@@ -177,13 +186,14 @@ class SocketIOService {
     }
     
     func readUDP(connection: Connection) {
-        queue.async {
-            guard let channel = connection.channel else {
-                os_log("Invalid channel type", log: OSLog.default, type: .error)
-                return
-            }
+ 
+        guard let channel = connection.channel else {
+            os_log("Invalid channel type", log: OSLog.default, type: .error)
+            return
+        }
 
-            channel.receive(minimumIncompleteLength: 1, maximumLength: 4196) { (data, context, isComplete, error) in
+        channel.receive(minimumIncompleteLength: 1, maximumLength: 65507) { (data, context, isComplete, error) in
+                self.queue.async(flags: .barrier) {
                 if let error = error {
                     os_log("Failed to read from UDP socket: %@", log: OSLog.default, type: .error, error as CVarArg)
                     connection.isAbortingConnection = true
@@ -196,13 +206,16 @@ class SocketIOService {
                     return
                 }
                 
+                guard let ipHeader = connection.lastIpHeader, let udpHeader = connection.lastUdpHeader else {
+                    os_log("Missing IP or UDP header for connection %{public}@", log: OSLog.default, type: .error, connection.description)
+                    return
+                }
                 
                 let packetData = UDPPacketFactory.createResponsePacket(
-                    ip: connection.lastIpHeader!,
-                    udp: connection.lastUdpHeader!,
+                    ip: ipHeader,
+                    udp: udpHeader,
                     packetData: data
                 )
-//                 os_log("Sending UDP data packet to client", log: OSLog.default, type: .default)
 
                 self.clientPacketWriter.writePackets([packetData], withProtocols: [NSNumber(value: AF_INET)])
 
@@ -210,5 +223,5 @@ class SocketIOService {
                 self.receiveMessage(connection: connection)
             }
         }
-      }
+    }
 }
