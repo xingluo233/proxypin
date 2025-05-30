@@ -17,7 +17,7 @@ class ConnectionManager : CloseableConnection{
 
     public var proxyAddress: NWEndpoint?
     
-    private let defaultPorts: [UInt16] = [80, 443]
+    private let defaultPorts: [UInt16] = [80, 443, 8080, 8088, 8888, 9000]
     
    
     func getConnection(nwProtocol: NWProtocol, ip: UInt32, port: UInt16, srcIp: UInt32, srcPort: UInt16) -> Connection? {
@@ -41,19 +41,14 @@ class ConnectionManager : CloseableConnection{
         let ipString = PacketUtil.intToIPAddress(ip)
 
         let endpoint: NWEndpoint
-        if (defaultPorts.contains(port) && !isPrivateIP(ipString)) {
-            endpoint = proxyAddress!
-        } else {
+        if (proxyAddress == nil || !defaultPorts.contains(port) || isPrivateIP(ipString)) {
             endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(ipString), port: NWEndpoint.Port(rawValue: port)!)
+            // 使用 TCP 协议
+            let parameters = NWParameters.tcp
+            let nwConnection = NWConnection(to: endpoint, using: parameters)
+            connection.channel = nwConnection
+            connection.isInitConnect = true
         }
-
-        // 使用 TCP 协议
-        let parameters = NWParameters.tcp
-
-        let nwConnection = NWConnection(to: endpoint, using: parameters)
-
-        connection.channel = nwConnection
-        connection.isInitConnect = true
 
         self.table[key] = connection
         os_log("Created TCP connection %{public}@", log: OSLog.default, type: .default, key)

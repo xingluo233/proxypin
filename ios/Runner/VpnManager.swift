@@ -52,6 +52,7 @@ class VpnManager{
                     self.updateVPNStatus(manager)
                     
                     if (manager.connection.status == .invalid || manager.connection.status == .disconnected){
+                       
                         print("VPN断开: \(String(describing: manager.debugDescription))")
                     }
                 })

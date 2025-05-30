@@ -80,11 +80,11 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
 
   @override
   Future<void> channelRead(ChannelContext channelContext, Channel channel, Uint8List msg) async {
-    try {
-      //手机扫码连接转发远程
-      HostAndPort? remote = channelContext.getAttribute(AttributeKeys.remote);
-      buffer.add(msg);
+    //手机扫码连接转发远程
+    HostAndPort? remote = channelContext.getAttribute(AttributeKeys.remote);
+    buffer.add(msg);
 
+    try {
       if (remote != null) {
         await remoteForward(channelContext, remote);
         return;

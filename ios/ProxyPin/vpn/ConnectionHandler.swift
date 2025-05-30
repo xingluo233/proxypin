@@ -7,6 +7,7 @@
 
 import Foundation
 import NetworkExtension
+import Network
 import os.log
 
 
@@ -153,11 +154,15 @@ class ConnectionHandler {
                 connection.lastTcpHeader = tcpHeader
 
                 if dataLength > 0 {
-//                     os_log("Received data packet %{public}@ length:%d seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, dataLength, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
+//                     os_log("[ConnectionHandler] Received data packet %{public}@ length:%d seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, dataLength, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
+                    
+                    //init proxy
+                    self.initProxyConnect(packetData: tcpHeader.payload!, destinationIP: destinationIP, destinationPort: destinationPort, connection: connection)
+                  
                     manager.addClientData(data: tcpHeader.payload!, connection: connection)
                     sendAck(ipHeader: ipHeader, tcpHeader: tcpHeader, acceptedDataLength: dataLength, connection: connection)
                 } else {
-                    os_log("Received ACK packet %{public}@ seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
+//                      os_log("[ConnectionHandler] Received ACK packet %{public}@ seq:%u, ack:%u", log: OSLog.default, type: .default, connection.description, tcpHeader.sequenceNumber, tcpHeader.ackNumber)
                 }
 
                 acceptAck(tcpHeader: tcpHeader, connection: connection)
@@ -200,7 +205,62 @@ class ConnectionHandler {
             os_log("Unknown TCP flag", log: OSLog.default, type: .error)
         }
     }
+
+    private func initProxyConnect(
+        packetData: Data,
+        destinationIP: UInt32,
+        destinationPort: UInt16,
+        connection: Connection
+    ) {
+        guard !connection.isInitConnect else {
+            return
+        }
+
+        connection.isInitConnect = true
+
+        let supportsProtocol = supportsProtocol(packetData: packetData)
         
+        let endpoint: Network.NWEndpoint
+        if (supportsProtocol && manager.proxyAddress != nil) {
+            endpoint = manager.proxyAddress!
+        } else {
+            let ipString = PacketUtil.intToIPAddress(destinationIP)
+            endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(ipString), port: NWEndpoint.Port(rawValue: destinationPort)!)
+        }
+        
+        // 使用 TCP 协议
+        let parameters = NWParameters.tcp
+        let nwConnection = NWConnection(to: endpoint, using: parameters)
+        connection.channel = nwConnection
+        connection.isInitConnect = true
+        self.ioService.registerSession(connection: connection)
+    }
+
+    private let methods: [String] = [
+        "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT", "PROPFIND", "REPORT"
+    ]
+
+    private func supportsProtocol(packetData: Data) -> Bool {
+        let position = packetData.startIndex
+        // 判断是否是 SSL 握手
+        if TLS.isTLSClientHello(packetData: packetData) {
+            return true
+        }
+
+        // 检查是否包含 HTTP 方法
+        for method in methods {
+            if packetData.count - position < method.count {
+                continue
+            }
+            let range = position..<(position + method.count)
+            if let substring = String(data: packetData.subdata(in: range), encoding: .utf8),
+               method.caseInsensitiveCompare(substring) == .orderedSame {
+                return true
+            }
+        }
+        return false
+    }
+
     //set connection as aborting so that background worker will close it.
     func resetTCPConnection(ip: IP4Header, tcp: TCPHeader) {
         let session = manager.getConnection(nwProtocol: .TCP, ip: ip.destinationIP, port: tcp.destinationPort, srcIp: ip.sourceIP, srcPort: tcp.sourcePort)
@@ -272,7 +332,7 @@ class ConnectionHandler {
             let ackData = TCPPacketFactory.createResponseAckData(ipHeader: ipHeader, tcpHeader: tcpHeader, ackToClient: ackNumber)
             self.write(data: ackData)
 
-//            os_log("Sent ACK packet to client %{public}@ ack: %u", log: OSLog.default, type: .default, connection.description, ackNumber)
+//             os_log("[ConnectionHandler] Sent ACK packet to client %{public}@ ack: %u", log: OSLog.default, type: .default, connection.description, ackNumber)
         }
     }
 

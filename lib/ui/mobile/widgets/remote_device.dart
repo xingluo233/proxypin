@@ -421,19 +421,16 @@ class _RemoteDevicePageState extends State<RemoteDevicePage> {
         });
 
         if (mounted) {
-          FlutterToastr.show(
-              "${localizations.connectSuccess}${Vpn.isVpnStarted ? '' : ', ${localizations.remoteConnectSuccessTips}'}",
-              context,
-              duration: 3);
+          CustomToast.success(
+                  "${localizations.connectSuccess}${Vpn.isVpnStarted ? '' : ', ${localizations.remoteConnectSuccessTips}'}")
+              .show(context);
         }
       }
       return true;
     } catch (e) {
       logger.e(e);
       if (mounted) {
-        if (mounted) {
-          CustomToast.error(localizations.remoteConnectFail).show(context, alignment: Alignment.topCenter);
-        }
+        CustomToast.error(localizations.remoteConnectFail).show(context, alignment: Alignment.topCenter);
       }
       return false;
     } finally {

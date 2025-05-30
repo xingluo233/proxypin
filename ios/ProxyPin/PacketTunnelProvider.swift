@@ -28,7 +28,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: host)
         NSLog(conf.debugDescription)
      
-        networkSettings.mtu = 9000
+        networkSettings.mtu = 1500
         
         let ipv4Settings = NEIPv4Settings(addresses: ["10.0.0.2"], subnetMasks: ["255.255.255.255"])
        
@@ -60,7 +60,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         proxySettings.matchDomains = [""]
         
         networkSettings.proxySettings =  proxySettings
-   
 
         networkSettings.ipv4Settings = ipv4Settings
         

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -45,6 +45,8 @@
 		9BCA28852C98C6B300C2B46C /* QueueFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCA28842C98C6B300C2B46C /* QueueFactory.swift */; };
 		9BCA288A2C98C82000C2B46C /* SocketIOService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCA28892C98C82000C2B46C /* SocketIOService.swift */; };
 		9BCA288C2C995B3700C2B46C /* UDPHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCA288B2C995B3700C2B46C /* UDPHeader.swift */; };
+		9BE87B5C2DEA480000F4FCEF /* MethodHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE87B5B2DEA47FA00F4FCEF /* MethodHandler.swift */; };
+		9BE87B5E2DEA6BAE00F4FCEF /* TLS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE87B5D2DEA6BAB00F4FCEF /* TLS.swift */; };
 		B375908E625E0AED772FA2C0 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37E307095F2B3E689A68827 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -151,6 +153,8 @@
 		9BCA28842C98C6B300C2B46C /* QueueFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueFactory.swift; sourceTree = "<group>"; };
 		9BCA28892C98C82000C2B46C /* SocketIOService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketIOService.swift; sourceTree = "<group>"; };
 		9BCA288B2C995B3700C2B46C /* UDPHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPHeader.swift; sourceTree = "<group>"; };
+		9BE87B5B2DEA47FA00F4FCEF /* MethodHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodHandler.swift; sourceTree = "<group>"; };
+		9BE87B5D2DEA6BAB00F4FCEF /* TLS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLS.swift; sourceTree = "<group>"; };
 		D37E307095F2B3E689A68827 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E328C7F89A365CDC0EAD15C6 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -251,6 +255,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				9BE87B5A2DEA47DE00F4FCEF /* Handlers */,
 				9BC4B8D12B4C19ED0047DBDD /* pip */,
 				9B7077352A5728B900F184A9 /* silence.mp3 */,
 				9B09121A2A5457B3001108B7 /* VpnManager.swift */,
@@ -346,6 +351,7 @@
 		9BCA28762C98901800C2B46C /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				9BE87B5D2DEA6BAB00F4FCEF /* TLS.swift */,
 				9BCA28772C98902900C2B46C /* PacketUtil.swift */,
 			);
 			path = utils;
@@ -359,6 +365,14 @@
 				9BCA28892C98C82000C2B46C /* SocketIOService.swift */,
 			);
 			path = socket;
+			sourceTree = "<group>";
+		};
+		9BE87B5A2DEA47DE00F4FCEF /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				9BE87B5B2DEA47FA00F4FCEF /* MethodHandler.swift */,
+			);
+			path = Handlers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -510,9 +524,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -565,9 +583,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -630,6 +652,7 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				9B70772D2A5718FB00F184A9 /* AudioManager.swift in Sources */,
+				9BE87B5C2DEA480000F4FCEF /* MethodHandler.swift in Sources */,
 				9B09121B2A5457B3001108B7 /* VpnManager.swift in Sources */,
 				9BC4B8CC2B4B48710047DBDD /* PictureInPictureManager.swift in Sources */,
 			);
@@ -660,6 +683,7 @@
 				9BCA28752C988EC400C2B46C /* TransportHeader.swift in Sources */,
 				9BCA287F2C989AF300C2B46C /* NWProtocol.swift in Sources */,
 				9BCA286F2C977E4C00C2B46C /* TCPPacketFactory.swift in Sources */,
+				9BE87B5E2DEA6BAE00F4FCEF /* TLS.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -252,7 +252,7 @@
   "pullConfigFail": "Failed to pull configuration, please check the network connection",
   "sync": "Sync",
   "invalidQRCode": "Unrecognized QR code",
-  "remoteConnectFail": "Connection failed，Please check if it is allowed on the same LAN and firewall",
+  "remoteConnectFail": "Connection failed，Please check if it is allowed on the same LAN and firewall, iOS needs to enable local network permissions",
   "remoteConnectSuccessTips": "Your phone needs to enable packet capture in order to capture requests",
 
   "windowMode": "Window Mode",

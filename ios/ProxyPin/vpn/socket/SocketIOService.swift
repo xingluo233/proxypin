@@ -11,7 +11,7 @@ import os.log
 
 class SocketIOService {
 //    private static let maxReceiveBufferSize = 16384
-    private static let maxReceiveBufferSize = 1024
+    private static let maxReceiveBufferSize = 1480
 
     private let queue: DispatchQueue = DispatchQueue(label: "ProxyPin.SocketIOService", attributes: .concurrent)
 
@@ -50,11 +50,11 @@ class SocketIOService {
                 os_log("Connection cancelled  %{public}@", log: OSLog.default, type: .default, connection.description)
                 connection.closeConnection()
                 self.sendFin(connection: connection)
+
             case .failed(let error):
                 connection.isConnected = false
                 os_log("Failed to connect: %{public}@ %{public}@", log: OSLog.default, type: .error,connection.description, error.localizedDescription)
                 connection.closeConnection()
-                self.sendFin(connection: connection)
             default:
                 os_log("Connection %{public}@ entered unhandled state: %{public}@", log: OSLog.default, type: .default, connection.description, String(describing: state))
                 break
@@ -97,19 +97,14 @@ class SocketIOService {
         
         channel.receive(minimumIncompleteLength: 1, maximumLength: Self.maxReceiveBufferSize) { (data, context, isComplete, error) in
             self.queue.async(flags: .barrier) {
-                os_log("Received TCP data packet %{public}@ length %d", log: OSLog.default, type: .default, connection.description, data?.count ?? 0)
+//                 os_log("[SocketIOService] Received TCP data packet %{public}@ length %d", log: OSLog.default, type: .default, connection.description, data?.count ?? -1)
                 if let error = error {
                     os_log("Failed to read from TCP socket: %@", log: OSLog.default, type: .error, error as CVarArg)
-                    self.sendFin(connection: connection)
                     connection.isAbortingConnection = true
                     return
                 }
-                
-                guard let data = data, !data.isEmpty else {
-                    return
-                }
 
-                self.pushDataToClient(buffer: data, connection: connection)
+                self.pushDataToClient(buffer: data ?? Data() , connection: connection)
 
                 // Recursively call readTCP to continue reading messages
                 self.receiveMessage(connection: connection)
@@ -133,7 +128,7 @@ class SocketIOService {
         // Last piece of data is usually smaller than MAX_RECEIVE_BUFFER_SIZE. We use this as a
         // trigger to set PSH on the resulting TCP packet that goes to the VPN.
 
-        connection.hasReceivedLastSegment = buffer.count < Self.maxReceiveBufferSize
+        connection.hasReceivedLastSegment = buffer.count <= 0
 
         guard let ipHeader = connection.lastIpHeader, let tcpHeader = connection.lastTcpHeader else {
             os_log("Invalid ipHeader or tcpHeader", log: OSLog.default, type: .error)
@@ -158,7 +153,7 @@ class SocketIOService {
             )
 
             self.clientPacketWriter.writePackets([data], withProtocols: [NSNumber(value: AF_INET)])
-//             os_log("Sent TCP data packet to client %{public}@ length:%d ack:%u", log: OSLog.default, type: .default, connection.description, data.count, connection.recSequence)
+//              os_log("[SocketIOService] Sent TCP data packet to client %{public}@ length:%d  seq:%u ack:%u", log: OSLog.default, type: .default, connection.description, buffer.count, unAck, connection.recSequence)
         }
     }
 
