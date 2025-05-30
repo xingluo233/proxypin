@@ -160,8 +160,8 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
                       isCN
                           ? '提示：默认不会开启HTTPS抓包，请安装证书后再开启HTTPS抓包。\n'
                               '点击HTTPS抓包(加锁图标)，选择安装根证书，按照提示操作即可。\n\n'
-                              '1. 支持HTTP2协议,可在设置中开启；\n'
-                              '2. 支持zstd解码；\n'
+                              '1. 修复HTTP2 Host；\n'
+                              '2. 优化ios ip层代理；\n'
                               '3. 增加自动已读标记；\n'
                               '4. 工具箱支持AES加解密；\n'
                               '5. 修复WebSocket解析错误, 以及二进制支持下载；\n'

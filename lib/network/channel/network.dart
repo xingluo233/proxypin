@@ -168,7 +168,7 @@ class Server extends Network {
       }
 
       if (remoteChannel != null && !remoteChannel.isSsl) {
-        var supportProtocols = configuration.enabledHttp2 ? TLS.supportProtocols(data) : null;
+        var supportProtocols = configuration.enabledHttp2 ? TLS.supportProtocols(data) : ['http/1.1'];
         await remoteChannel.startSecureSocket(channelContext, host: serviceName, supportedProtocols: supportProtocols);
       }
 
@@ -185,10 +185,12 @@ class Server extends Network {
           bufferedData: data, supportedProtocols: supportedProtocols);
 
       channel.serverSecureSocket(secureSocket, channelContext);
-      // logger.d(
-      //     '[${channelContext.clientChannel?.id}] $hostAndPort ssl handshake done, selectedProtocol: ${secureSocket.selectedProtocol}');
-
       remoteChannel?.listen(channelContext);
+
+      if (selectedProtocol != secureSocket.selectedProtocol) {
+        logger.i(
+            '[${channelContext.clientChannel?.id}] $hostAndPort ssl handshake done, clientSelectedProtocol: ${secureSocket.selectedProtocol}, serverSelectedProtocols: $supportedProtocols');
+      }
     } catch (error, trace) {
       logger.e('[${channelContext.clientChannel?.id}] $hostAndPort ssl error', error: error, stackTrace: trace);
       try {

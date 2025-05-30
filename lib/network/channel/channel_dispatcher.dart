@@ -137,7 +137,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
 
       if (data is HttpRequest) {
         channelContext.currentRequest = data;
-        data.hostAndPort = channelContext.host ?? getHostAndPort(data, ssl: channel.isSsl);
+        data.hostAndPort ??= channelContext.host ?? getHostAndPort(data, ssl: channel.isSsl);
         if (data.headers.host != null && data.headers.host?.contains(":") == false) {
           data.hostAndPort?.host = data.headers.host!;
         }

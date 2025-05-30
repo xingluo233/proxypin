@@ -234,8 +234,8 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
                                       customItem: ContextMenuButtonItem(
                                         label: localizations.download,
                                         onPressed: () async {
-                                          String? path =
-                                              (await FilePicker.platform.saveFile(bytes: message.payloadData));
+                                          String? path = (await FilePicker.platform
+                                              .saveFile(fileName: "websocket.txt", bytes: message.payloadData));
                                           if (path != null && mounted) {
                                             CustomToast.success(localizations.saveSuccess).show(this.context);
                                           }

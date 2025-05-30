@@ -92,7 +92,7 @@ class _SocketLaunchState extends State<SocketLaunch> with WindowListener, Widget
   }
 
   Future<void> appExit() async {
-    widget.proxyServer.stop();
+    await widget.proxyServer.stop();
     started = false;
     await windowManager.destroy();
     exit(0);
