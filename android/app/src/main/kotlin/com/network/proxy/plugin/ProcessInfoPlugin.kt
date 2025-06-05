@@ -45,6 +45,11 @@ class ProcessInfoPlugin : AndroidFlutterPlugin() {
                     }
                 }
 
+                "getRemoteAddressByPort" -> {
+                    val port = call.argument<Int>("port")
+                    result.success(processInfoManager.getRemoteAddressByPort(port!!))
+                }
+
                 else -> {
                     result.notImplemented()
                 }

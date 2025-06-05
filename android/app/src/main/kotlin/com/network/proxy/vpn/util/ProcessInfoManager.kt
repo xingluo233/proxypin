@@ -154,6 +154,17 @@ class ProcessInfoManager private constructor() {
         return null
     }
 
+    fun getRemoteAddressByPort(localPort: Int): Map<String, Any>? {
+        val networkInfo = localPortCache.get(localPort)
+        if (networkInfo != null) {
+            return mapOf(
+                "remoteHost" to networkInfo.remoteHost,
+                "remotePort" to networkInfo.remotePort
+            )
+        }
+        return null
+    }
+
     private fun getProcessInfo(uid: Int): ProcessInfo? {
         var appInfo = appInfoCache.get(uid)
         if (appInfo != null) return appInfo
