@@ -21,7 +21,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_desktop_context_menu/flutter_desktop_context_menu.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:proxypin/network/bin/server.dart';
 import 'package:proxypin/network/components/manager/script_manager.dart';

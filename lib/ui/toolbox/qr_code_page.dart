@@ -23,7 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:flutter_qr_reader_plus/flutter_qr_reader.dart';
 import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:image_pickers/image_pickers.dart';

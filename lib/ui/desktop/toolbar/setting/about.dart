@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/ui/app_update/app_update_repository.dart';
 import 'package:proxypin/ui/configuration.dart';
 import 'package:url_launcher/url_launcher.dart';
