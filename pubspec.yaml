@@ -17,18 +17,18 @@ dependencies:
   pointycastle: ^4.0.0
   logger: ^2.5.0
   date_format: ^2.0.9
-  window_manager: ^0.4.3
+  window_manager: ^0.5.0
   windows_single_instance: ^1.0.1
   desktop_multi_window:
     git:
       url: https://gitee.com/wanghongenpin/flutter-plugins.git
       path: packages/desktop_multi_window
   path_provider: ^2.1.5
-  file_picker: ^10.1.2
+  file_picker: ^10.2.0
   proxy_manager: ^0.0.3
   permission_handler: ^12.0.0+1
   flutter_toastr: ^1.0.3
-  share_plus: ^10.1.4
+  share_plus: ^11.0.0
   flutter_js:
     git:
       url: https://github.com/abner/flutter_js
@@ -38,7 +38,7 @@ dependencies:
       url: https://github.com/wanghongenpin/flutter-code-editor.git
       ref: secure-keyboard
   flutter_desktop_context_menu: ^0.2.0
-  device_info_plus: ^11.4.0
+  device_info_plus: ^11.5.0
   shared_preferences: ^2.5.3
   image_pickers: ^2.0.6
   url_launcher: ^6.3.1
@@ -56,7 +56,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # The following section is specific to Flutter packages.
 flutter:
