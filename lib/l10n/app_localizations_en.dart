@@ -398,6 +398,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyUrl => 'Copy URL';
 
   @override
+  String get copyRawRequest => 'Copy Raw Request';
+
+  @override
   String get copyRequestResponse => 'Copy Request and Response';
 
   @override

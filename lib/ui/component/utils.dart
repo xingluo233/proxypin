@@ -72,6 +72,21 @@ String getPackage(int? size) {
   return "${(size / 1024).toStringAsFixed(2)} KB";
 }
 
+String copyRawRequest(HttpRequest request) {
+  var sb = StringBuffer();
+  var uri = request.requestUri!;
+  var pathAndQuery = uri.path + (uri.query.isNotEmpty ? '?${uri.query}' : '');
+
+
+  sb.writeln("${request.method.name} $pathAndQuery ${request.protocolVersion}");
+  sb.write(request.headers.headerLines());
+  if (request.bodyAsString.isNotEmpty) {
+    sb.writeln();
+    sb.write(request.bodyAsString);
+  }
+  return sb.toString();
+}
+
 String copyRequest(HttpRequest request, HttpResponse? response) {
   var sb = StringBuffer();
   sb.writeln("Request");

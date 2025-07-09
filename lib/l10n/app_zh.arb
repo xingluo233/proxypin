@@ -134,6 +134,7 @@
   "copy": "复制",
   "copyHost": "复制域名",
   "copyUrl": "复制URL",
+  "copyRawRequest": "复制 原始请求",
   "copyRequestResponse": "复制 请求和响应",
   "copyCurl": "复制 cURL",
   "copyAsPythonRequests": "复制 Python Requests",

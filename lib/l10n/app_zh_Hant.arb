@@ -127,6 +127,7 @@
   "copy": "複製",
   "copyHost": "複製網域名稱",
   "copyUrl": "複製URL",
+  "copyRawRequest": "複製原始請求",
   "copyRequestResponse": "複製 請求和回應",
   "copyCurl": "複製 cURL",
   "copyAsPythonRequests": "複製 Python Requests",

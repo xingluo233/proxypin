@@ -397,6 +397,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyUrl => '复制URL';
 
   @override
+  String get copyRawRequest => '复制 原始请求';
+
+  @override
   String get copyRequestResponse => '复制 请求和响应';
 
   @override
@@ -1347,6 +1350,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get copyUrl => '複製URL';
+
+  @override
+  String get copyRawRequest => '複製原始請求';
 
   @override
   String get copyRequestResponse => '複製 請求和回應';

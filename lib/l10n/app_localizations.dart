@@ -864,6 +864,12 @@ abstract class AppLocalizations {
   /// **'Copy URL'**
   String get copyUrl;
 
+  /// No description provided for @copyRawRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Raw Request'**
+  String get copyRawRequest;
+
   /// No description provided for @copyRequestResponse.
   ///
   /// In en, this message translates to:
