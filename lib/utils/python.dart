@@ -51,9 +51,9 @@ bool processCookies(StringBuffer py, List<String> headers) {
       py.write('cookies = {\n');
       var cookies = header.substring(9, header.length - 1).trim().split(';');
       for (var cookie in cookies) {
-        var parts = cookie.split('=');
+        var parts = cookie.splitFirst('='.codeUnitAt(0));
         if (parts.length == 2) {
-          py.writeln('  "${parts[0].trim()}": "${parts[1].trim()}",');
+          py.writeln('  "${parts[0].trim()}": "${escapeQuotes(parts[1].trim())}",');
         }
       }
       py.writeln('}\n');
