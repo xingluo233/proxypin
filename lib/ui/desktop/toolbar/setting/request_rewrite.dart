@@ -152,7 +152,7 @@ class RequestRewriteState extends State<RequestRewriteWidget> {
   }
 
   //导入js
-  import() async {
+  Future<void> import() async {
     String? path;
     if (Platform.isMacOS) {
       path = await DesktopMultiWindow.invokeMethod(0, "pickFiles", {

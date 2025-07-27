@@ -150,7 +150,7 @@ class _ScriptWidgetState extends State<ScriptWidget> {
                         ]))));
   }
 
-  consoleLog() {
+  void consoleLog() {
     openScriptConsoleWindow();
   }
 
@@ -668,7 +668,7 @@ class _ScriptListState extends State<ScriptList> {
     _refreshScript();
   }
 
-  removeScripts(List<int> indexes) async {
+  Future<void> removeScripts(List<int> indexes) async {
     if (indexes.isEmpty) return;
     showConfirmDialog(context, content: localizations.confirmContent, onConfirm: () async {
       var scriptManager = await ScriptManager.instance;

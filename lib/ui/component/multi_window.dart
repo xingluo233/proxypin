@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:proxypin/network/bin/server.dart';
+import 'package:proxypin/network/components/manager/request_map_manager.dart';
 import 'package:proxypin/network/components/manager/request_rewrite_manager.dart';
 import 'package:proxypin/network/components/manager/rewrite_rule.dart';
 import 'package:proxypin/network/components/manager/script_manager.dart';
@@ -208,6 +209,10 @@ void registerMethodHandler() {
     if (call.method == 'getProxyInfo') {
       return ProxyServer.current?.isRunning == true ? {'host': '127.0.0.1', 'port': ProxyServer.current!.port} : null;
     }
+    if (call.method == 'refreshRequestRewrite') {
+      await MultiWindow._handleRefreshRewrite(Operation.of(call.arguments['operation']), call.arguments);
+      return 'done';
+    }
 
     if (call.method == 'refreshScript') {
       await ScriptManager.instance.then((value) {
@@ -216,8 +221,10 @@ void registerMethodHandler() {
       return 'done';
     }
 
-    if (call.method == 'refreshRequestRewrite') {
-      await MultiWindow._handleRefreshRewrite(Operation.of(call.arguments['operation']), call.arguments);
+    if (call.method == 'refreshRequestMap') {
+      await RequestMapManager.instance.then((value) {
+        return value.reloadConfig();
+      });
       return 'done';
     }
 
@@ -257,7 +264,7 @@ void registerMethodHandler() {
 }
 
 ///打开编码窗口
-encodeWindow(EncoderType type, BuildContext context, [String? text]) async {
+Future<void> encodeWindow(EncoderType type, BuildContext context, [String? text]) async {
   if (Platforms.isMobile()) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => EncoderWidget(type: type, text: text)));
     return;
@@ -278,7 +285,7 @@ encodeWindow(EncoderType type, BuildContext context, [String? text]) async {
     ..show();
 }
 
-openScriptConsoleWindow() async {
+Future<void> openScriptConsoleWindow() async {
   var ratio = 1.0;
   if (Platform.isWindows) {
     ratio = WindowManager.instance.getDevicePixelRatio();

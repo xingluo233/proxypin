@@ -28,6 +28,7 @@ import 'package:proxypin/ui/desktop/toolbar/setting/about.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/external_proxy.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/hosts.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/request_block.dart';
+import 'package:proxypin/ui/desktop/toolbar/setting/request_map.dart';
 
 import 'filter.dart';
 
@@ -75,6 +76,7 @@ class _SettingState extends State<Setting> {
         item(localizations.hosts, onPressed: hosts),
         item(localizations.requestBlock, onPressed: showRequestBlock),
         item(localizations.requestRewrite, onPressed: requestRewrite),
+        item("请求映射", onPressed: requestMapLocal),
         item(localizations.script,
             onPressed: () => MultiWindow.openWindow(localizations.script, 'ScriptWidget', size: const Size(800, 700))),
         item(localizations.externalProxy, onPressed: setExternalProxy),
@@ -92,12 +94,12 @@ class _SettingState extends State<Setting> {
             child: Text(text, style: const TextStyle(fontSize: 14))));
   }
 
-  showAbout() {
+  void showAbout() {
     showDialog(context: context, builder: (context) => DesktopAbout());
   }
 
   ///设置外部代理地址
-  setExternalProxy() {
+  void setExternalProxy() {
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -110,6 +112,18 @@ class _SettingState extends State<Setting> {
   void requestRewrite() async {
     if (!mounted) return;
     MultiWindow.openWindow(localizations.requestRewrite, 'RequestRewriteWidget', size: const Size(800, 750));
+  }
+
+  ///请求本地映射
+  void requestMapLocal() async {
+    if (!mounted) return;
+    // MultiWindow.openWindow(localizations.requestRewrite, 'RequestRewriteWidget', size: const Size(800, 750));
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return RequestMapPage();
+        });
   }
 
   ///show域名过滤Dialog

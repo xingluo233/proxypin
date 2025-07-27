@@ -46,8 +46,8 @@ class MobileScript extends StatefulWidget {
 bool _refresh = false;
 
 /// 刷新脚本
-void _refreshScript() {
-  if (_refresh) {
+void _refreshScript({bool force = false}) {
+  if (_refresh && !force) {
     return;
   }
   _refresh = true;
@@ -447,7 +447,7 @@ class _ScriptEditState extends State<ScriptEdit> {
                       await scriptManager.updateScript(widget.scriptItem!, script.text);
                     }
 
-                    _refreshScript();
+                    _refreshScript(force: true);
                     if (context.mounted) {
                       FlutterToastr.show(localizations.saveSuccess, context);
                       Navigator.of(context).maybePop(true);
@@ -671,7 +671,7 @@ class _ScriptListState extends State<ScriptList> {
                   text: localizations.delete,
                   onPressed: () async {
                     await (await ScriptManager.instance).removeScript(index);
-                    _refreshScript();
+                    _refreshScript(force: true);
                     if (context.mounted) FlutterToastr.show(localizations.importSuccess, context);
                   }),
               Container(color: Theme.of(context).hoverColor, height: 8),
@@ -755,7 +755,7 @@ class _ScriptListState extends State<ScriptList> {
       setState(() {
         selected.clear();
       });
-      _refreshScript();
+      _refreshScript(force: true);
 
       if (mounted) FlutterToastr.show(localizations.deleteSuccess, context);
     });
