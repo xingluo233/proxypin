@@ -134,6 +134,7 @@
   "copy": "Copy",
   "copyHost": "Copy Host",
   "copyUrl": "Copy URL",
+  "copyRawRequest": "Copy Raw Request",
   "copyRequestResponse": "Copy Request and Response",
   "copyCurl": "Copy cURL",
   "copyAsPythonRequests": "Copy as Python Requests",
