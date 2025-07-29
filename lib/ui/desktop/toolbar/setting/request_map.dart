@@ -9,12 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/components/manager/request_map_manager.dart';
-import 'package:proxypin/network/components/manager/script_manager.dart';
 import 'package:proxypin/ui/component/app_dialog.dart';
 import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/component/widgets.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/request_map/map_local.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/request_map/map_scipt.dart';
+import 'package:proxypin/utils/lang.dart';
 
 import '../../../../network/util/logger.dart';
 
@@ -76,7 +76,7 @@ class _RequestMapPageState extends State<RequestMapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text("请求映射", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            title: Text(localizations.requestMap, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             toolbarHeight: 36,
             centerTitle: true),
         body: Padding(
@@ -92,14 +92,14 @@ class _RequestMapPageState extends State<RequestMapPage> {
                             SizedBox(
                                 width: 350,
                                 child: ListTile(
-                                    title: Text("启用请求映射"),
-                                    subtitle: Text("不请求远程服务，使用本地配置或脚本进行响应"),
+                                    title: Text("${localizations.enable} ${localizations.requestMap}"),
+                                    subtitle: Text(localizations.requestMapDescribe, style: const TextStyle(fontSize: 12)),
                                     trailing: SwitchWidget(
                                         value: data.enabled,
                                         scale: 0.8,
                                         onChanged: (value) {
                                           data.enabled = value;
-                                          // _refreshScript();
+                                          _refreshConfig();
                                         }))),
                             Expanded(
                                 child: Row(
@@ -122,7 +122,7 @@ class _RequestMapPageState extends State<RequestMapPage> {
                             const SizedBox(width: 15)
                           ]),
                           const SizedBox(height: 5),
-                          RequestMapList(list: data.rules, windowId: widget.windowId!),
+                          RequestMapList(list: data.rules, windowId: widget.windowId),
                         ]))));
   }
 
@@ -145,24 +145,21 @@ class _RequestMapPageState extends State<RequestMapPage> {
     }
     try {
       var json = jsonDecode(await File(path).readAsString());
-      var scriptManager = (await ScriptManager.instance);
+      var manager = (await RequestMapManager.instance);
       if (json is List<dynamic>) {
         for (var item in json) {
-          var scriptItem = ScriptItem.fromJson(item);
-          await scriptManager.addScript(scriptItem, item['script']);
+          var mapRule = RequestMapRule.fromJson(item);
+          var requestMapItem = RequestMapItem.fromJson(item['item']);
+          await manager.addRule(mapRule, requestMapItem);
         }
-      } else {
-        var scriptItem = ScriptItem.fromJson(json);
-        await scriptManager.addScript(scriptItem, json['script']);
       }
 
-      // _refreshScript();
       if (mounted) {
         CustomToast.success(localizations.importSuccess).show(context);
       }
       setState(() {});
     } catch (e, t) {
-      logger.e('导入失败 $path', error: e, stackTrace: t);
+      logger.e('[RequestMap] import fail $path', error: e, stackTrace: t);
       if (mounted) {
         CustomToast.error("${localizations.importFailed} $e").show(context);
       }
@@ -181,7 +178,7 @@ class _RequestMapPageState extends State<RequestMapPage> {
 
 /// 脚本列表
 class RequestMapList extends StatefulWidget {
-  final int windowId;
+  final int? windowId;
   final List<RequestMapRule> list;
 
   const RequestMapList({super.key, required this.list, required this.windowId});
@@ -200,7 +197,12 @@ class _RequestMapListState extends State<RequestMapList> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onSecondaryTapDown: (details) => showGlobalMenu(details.globalPosition),
+        onSecondaryTap: () {
+          if (lastPressPosition == null) {
+            return;
+          }
+          showGlobalMenu(lastPressPosition!);
+        },
         onTapDown: (details) {
           if (selected.isEmpty) {
             return;
@@ -226,12 +228,16 @@ class _RequestMapListState extends State<RequestMapList> {
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey.withOpacity(0.2))),
                 child: SingleChildScrollView(
                     child: Column(children: [
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    Container(width: 200, padding: const EdgeInsets.only(left: 10), child: Text(localizations.name)),
-                    SizedBox(width: 50, child: Text(localizations.enable, textAlign: TextAlign.center)),
-                    const VerticalDivider(),
-                    const Expanded(child: Text("URL")),
-                  ]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(width: 130, padding: const EdgeInsets.only(left: 10), child: Text(localizations.name)),
+                      SizedBox(width: 50, child: Text(localizations.enable, textAlign: TextAlign.center)),
+                      const VerticalDivider(),
+                      const Expanded(child: Text("URL")),
+                      SizedBox(width: 100, child: Text(localizations.action, textAlign: TextAlign.center)),
+                    ],
+                  ),
                   const Divider(thickness: 0.5),
                   Column(children: rows(widget.list))
                 ])))));
@@ -239,18 +245,15 @@ class _RequestMapListState extends State<RequestMapList> {
 
   List<Widget> rows(List<RequestMapRule> list) {
     var primaryColor = Theme.of(context).colorScheme.primary;
+    bool isEN = Localizations.localeOf(context) == const Locale.fromSubtags(languageCode: 'en');
 
     return List.generate(list.length, (index) {
       return InkWell(
-          // onTap: () {
-          //   selected[index] = !(selected[index] ?? false);
-          //   setState(() {});
-          // },
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           hoverColor: primaryColor.withOpacity(0.3),
-          onDoubleTap: () => showEdit(index),
           onSecondaryTapDown: (details) => showMenus(details, index),
+          onDoubleTap: () => showEdit(index),
           onHover: (hover) {
             if (isPressed && !selected.contains(index)) {
               setState(() {
@@ -282,7 +285,7 @@ class _RequestMapListState extends State<RequestMapList> {
               padding: const EdgeInsets.all(5),
               child: Row(
                 children: [
-                  SizedBox(width: 200, child: Text(list[index].name!, style: const TextStyle(fontSize: 13))),
+                  SizedBox(width: 130, child: Text(list[index].name ?? '', style: const TextStyle(fontSize: 13))),
                   SizedBox(
                       width: 40,
                       child: Transform.scale(
@@ -294,7 +297,13 @@ class _RequestMapListState extends State<RequestMapList> {
                                 _refreshConfig();
                               }))),
                   const SizedBox(width: 20),
-                  Expanded(child: Text(list[index].url, style: const TextStyle(fontSize: 13))),
+                  Expanded(
+                      child:
+                          Text(list[index].url, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13))),
+                  SizedBox(
+                      width: 100,
+                      child: Text(isEN ? list[index].type.name.camelCaseToSpaced() : list[index].type.label,
+                          textAlign: TextAlign.center, style: const TextStyle(fontSize: 13))),
                 ],
               )));
     });
@@ -337,8 +346,8 @@ class _RequestMapListState extends State<RequestMapList> {
           height: 35,
           child: Text(localizations.delete),
           onTap: () async {
-            var scriptManager = await ScriptManager.instance;
-            await scriptManager.removeScript(index);
+            var manager = await RequestMapManager.instance;
+            await manager.deleteRule(index);
             _refreshConfig();
           }),
     ]).then((value) {
@@ -374,7 +383,8 @@ class _RequestMapListState extends State<RequestMapList> {
     String? path;
     if (Platform.isMacOS) {
       path = await DesktopMultiWindow.invokeMethod(0, "saveFile", {"fileName": fileName});
-      WindowController.fromWindowId(widget.windowId).show();
+
+      if (widget.windowId != null) WindowController.fromWindowId(widget.windowId!).show();
     } else {
       path = await FilePicker.platform.saveFile(fileName: fileName);
     }
@@ -388,7 +398,7 @@ class _RequestMapListState extends State<RequestMapList> {
       var item = widget.list[idx];
       var map = item.toJson();
       map.remove("itemPath");
-      map['item'] = await manager.getMapItem(item);
+      map['item'] = (await manager.getMapItem(item))?.toJson();
       json.add(map);
     }
 
@@ -548,7 +558,7 @@ class _RequestMapEditState extends State<RequestMapEdit> {
                 var requestMapManager = await RequestMapManager.instance;
                 var index = requestMapManager.rules.indexOf(rule);
                 if (index >= 0) {
-                  requestMapManager.updateRule(rule, item);
+                  await requestMapManager.updateRule(rule, item);
                 } else {
                   await requestMapManager.addRule(rule, item);
                 }
@@ -564,10 +574,7 @@ class _RequestMapEditState extends State<RequestMapEdit> {
   void onChangeType(RequestMapType? val) async {
     if (mapType == val) return;
     mapType = val!;
-    setState(() {
-      // rewriteReplaceKey.currentState?.initItems(ruleType, items);
-      // rewriteUpdateKey.currentState?.initItems(ruleType, items);
-    });
+    setState(() {});
   }
 
   Widget mapRule() {

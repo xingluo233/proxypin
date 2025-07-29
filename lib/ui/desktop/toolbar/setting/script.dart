@@ -155,7 +155,7 @@ class _ScriptWidgetState extends State<ScriptWidget> {
   }
 
   //导入js
-  import() async {
+  Future<void> import() async {
     String? path;
     if (Platform.isMacOS) {
       path = await DesktopMultiWindow.invokeMethod(0, "pickFiles", {
@@ -464,7 +464,12 @@ class _ScriptListState extends State<ScriptList> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onSecondaryTapDown: (details) => showGlobalMenu(details.globalPosition),
+        onSecondaryTap: () {
+          if (lastPressPosition == null) {
+            return;
+          }
+          showGlobalMenu(lastPressPosition!);
+        },
         onTapDown: (details) {
           if (selected.isEmpty) {
             return;

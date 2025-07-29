@@ -76,7 +76,7 @@ class _SettingState extends State<Setting> {
         item(localizations.hosts, onPressed: hosts),
         item(localizations.requestBlock, onPressed: showRequestBlock),
         item(localizations.requestRewrite, onPressed: requestRewrite),
-        item("请求映射", onPressed: requestMapLocal),
+        item(localizations.requestMap, onPressed: requestMap),
         item(localizations.script,
             onPressed: () => MultiWindow.openWindow(localizations.script, 'ScriptWidget', size: const Size(800, 700))),
         item(localizations.externalProxy, onPressed: setExternalProxy),
@@ -115,15 +115,9 @@ class _SettingState extends State<Setting> {
   }
 
   ///请求本地映射
-  void requestMapLocal() async {
+  void requestMap() async {
     if (!mounted) return;
-    // MultiWindow.openWindow(localizations.requestRewrite, 'RequestRewriteWidget', size: const Size(800, 750));
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return RequestMapPage();
-        });
+    MultiWindow.openWindow(localizations.requestMap, 'RequestMapPage', size: const Size(800, 720));
   }
 
   ///show域名过滤Dialog
@@ -198,7 +192,6 @@ class _ProxyMenuState extends State<_ProxyMenu> {
         const Divider(thickness: 0.3, height: 8),
         setSystemProxy(),
         const Divider(thickness: 0.3, height: 8),
-
         Row(children: [
           Expanded(
               child: Padding(
@@ -214,7 +207,6 @@ class _ProxyMenuState extends State<_ProxyMenu> {
           SizedBox(width: 10)
         ]),
         const Divider(thickness: 0.3, height: 8),
-
         Row(children: [
           Expanded(
               child: Padding(

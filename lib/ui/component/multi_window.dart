@@ -40,6 +40,7 @@ import 'package:proxypin/utils/platform.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../desktop/toolbar/setting/request_map.dart';
 import '../toolbox/cert_hash.dart';
 import '../toolbox/encoder.dart';
 import '../toolbox/js_run.dart';
@@ -81,6 +82,9 @@ Widget multiWindow(int windowId, Map<dynamic, dynamic> argument) {
   if (argument['name'] == 'RequestRewriteWidget') {
     return futureWidget(
         RequestRewriteManager.instance, (data) => RequestRewriteWidget(windowId: windowId, requestRewrites: data));
+  }
+  if (argument['name'] == 'RequestMapPage') {
+    return RequestMapPage(windowId: windowId);
   }
 
   if (argument['name'] == 'QrCodePage') {
