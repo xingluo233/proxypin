@@ -377,8 +377,9 @@ class ScriptEdit extends StatefulWidget {
   final ScriptItem? scriptItem;
   final String? script;
   final String? url;
+  final String? title;
 
-  const ScriptEdit({super.key, this.scriptItem, this.script, this.url});
+  const ScriptEdit({super.key, this.scriptItem, this.script, this.url, this.title});
 
   @override
   State<StatefulWidget> createState() => _ScriptEditState();
@@ -395,7 +396,7 @@ class _ScriptEditState extends State<ScriptEdit> {
   void initState() {
     super.initState();
     script = CodeController(language: javascript, text: widget.script ?? ScriptManager.template);
-    nameController = TextEditingController(text: widget.scriptItem?.name);
+    nameController = TextEditingController(text: widget.scriptItem?.name ?? widget.title);
     urlController = TextEditingController(text: widget.scriptItem?.url ?? widget.url);
   }
 

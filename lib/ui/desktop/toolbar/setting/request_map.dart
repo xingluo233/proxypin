@@ -93,7 +93,8 @@ class _RequestMapPageState extends State<RequestMapPage> {
                                 width: 350,
                                 child: ListTile(
                                     title: Text("${localizations.enable} ${localizations.requestMap}"),
-                                    subtitle: Text(localizations.requestMapDescribe, style: const TextStyle(fontSize: 12)),
+                                    subtitle:
+                                        Text(localizations.requestMapDescribe, style: const TextStyle(fontSize: 12)),
                                     trailing: SwitchWidget(
                                         value: data.enabled,
                                         scale: 0.8,
@@ -438,8 +439,10 @@ class RequestMapEdit extends StatefulWidget {
   final RequestMapRule? rule;
   final RequestMapItem? item;
   final int? windowId;
+  final String? url;
+  final String? title;
 
-  const RequestMapEdit({super.key, this.rule, this.windowId, this.item});
+  const RequestMapEdit({super.key, this.rule, this.windowId, this.item, this.url, this.title});
 
   @override
   State<StatefulWidget> createState() {
@@ -462,9 +465,9 @@ class _RequestMapEditState extends State<RequestMapEdit> {
   @override
   void initState() {
     super.initState();
-    rule = widget.rule ?? RequestMapRule(url: '', type: RequestMapType.local);
+    rule = widget.rule ?? RequestMapRule(url: widget.url ?? '', type: RequestMapType.local);
     mapType = rule.type;
-    nameInput = TextEditingController(text: rule.name);
+    nameInput = TextEditingController(text: rule.name ?? widget.title);
     urlInput = TextEditingController(text: rule.url);
   }
 
