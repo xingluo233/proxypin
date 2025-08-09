@@ -36,7 +36,7 @@ const contentMap = {
   ContentType.font: Icons.font_download,
 };
 
-Icon getIcon(HttpResponse? response, {Color? color}) {
+Widget getIcon(HttpResponse? response, {Color? color}) {
   if (response == null) {
     return Icon(Icons.question_mark, size: 16, color: color ?? Colors.green);
   }
@@ -45,6 +45,14 @@ Icon getIcon(HttpResponse? response, {Color? color}) {
   }
 
   var contentType = response.contentType;
+  if (contentType.isImage && response.body != null) {
+    return Image.memory(
+      Uint8List.fromList(response.body!),
+      width: 26,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Icon(Icons.image, size: 16, color: color ?? Colors.green),
+    );
+  }
   return Icon(contentMap[contentType] ?? Icons.http, size: 16, color: color ?? Colors.green);
 }
 
@@ -76,7 +84,6 @@ String copyRawRequest(HttpRequest request) {
   var sb = StringBuffer();
   var uri = request.requestUri!;
   var pathAndQuery = uri.path + (uri.query.isNotEmpty ? '?${uri.query}' : '');
-
 
   sb.writeln("${request.method.name} $pathAndQuery ${request.protocolVersion}");
   sb.write(request.headers.headerLines());
