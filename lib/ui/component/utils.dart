@@ -25,6 +25,8 @@ import 'package:proxypin/network/http/content_type.dart';
 import 'package:proxypin/network/http/http.dart';
 import 'package:proxypin/network/util/logger.dart';
 
+import '../../utils/platform.dart';
+
 const contentMap = {
   ContentType.json: Icons.data_object,
   ContentType.html: Icons.html,
@@ -38,22 +40,22 @@ const contentMap = {
 
 Widget getIcon(HttpResponse? response, {Color? color}) {
   if (response == null) {
-    return Icon(Icons.question_mark, size: 16, color: color ?? Colors.green);
+    return SizedBox(width: 18, child: Icon(Icons.question_mark, size: 16, color: color ?? Colors.green));
   }
   if (response.status.code < 0) {
-    return Icon(Icons.error, size: 16, color: color ?? Colors.red);
+    return SizedBox(width: 18, child: Icon(Icons.error, size: 16, color: color ?? Colors.red));
   }
 
   var contentType = response.contentType;
   if (contentType.isImage && response.body != null) {
     return Image.memory(
       Uint8List.fromList(response.body!),
-      width: 26,
-      fit: BoxFit.cover,
+      width: Platforms.isDesktop() ? 19 : 26,
       errorBuilder: (context, error, stackTrace) => Icon(Icons.image, size: 16, color: color ?? Colors.green),
     );
   }
-  return Icon(contentMap[contentType] ?? Icons.http, size: 16, color: color ?? Colors.green);
+  return SizedBox(
+      width: 18, child: Icon(contentMap[contentType] ?? Icons.http, size: 16, color: color ?? Colors.green));
 }
 
 //展示报文大小

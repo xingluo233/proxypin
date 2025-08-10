@@ -409,11 +409,12 @@ class _BodyState extends State<_Body> {
       return const Center(child: Text("video not support preview"));
     }
     if (type == ViewType.hex) {
-      return SelectableText(message!.body!.map(intToHex).join(" "), contextMenuBuilder: contextMenu);
+      return SelectableText(showCursor: true, message!.body!.map(intToHex).join(" "), contextMenuBuilder: contextMenu);
     }
 
     if (type == ViewType.formUrl) {
-      return SelectableText(Uri.decodeFull(message!.getBodyString()), contextMenuBuilder: contextMenu);
+      return SelectableText(
+          showCursor: true, Uri.decodeFull(message!.getBodyString()), contextMenuBuilder: contextMenu);
     }
 
     return futureWidget(message!.decodeBodyString(), initialData: message!.getBodyString(), (body) {
@@ -434,7 +435,7 @@ class _BodyState extends State<_Body> {
         logger.e(e, stackTrace: StackTrace.current);
       }
 
-      return SelectableText.rich(TextSpan(text: body), contextMenuBuilder: contextMenu);
+      return SelectableText.rich(showCursor: true, TextSpan(text: body), contextMenuBuilder: contextMenu);
     });
   }
 }

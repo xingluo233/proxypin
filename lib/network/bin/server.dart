@@ -125,7 +125,7 @@ class ProxyServer {
   }
 
   /// 设置系统代理
-  setSystemProxyEnable(bool enable) async {
+  Future<void> setSystemProxyEnable(bool enable) async {
     if (!Platforms.isDesktop()) {
       return;
     }
@@ -154,7 +154,7 @@ class ProxyServer {
   }
 
   ///添加监听器
-  addListener(EventListener listener) {
+  void addListener(EventListener listener) {
     listeners.add(listener);
   }
 }

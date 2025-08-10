@@ -2,7 +2,7 @@ name: proxypin
 description: ProxyPin
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.9+19
+version: 1.1.2+19
 
 environment:
   sdk: '>=3.0.2 <4.0.0'
@@ -24,15 +24,12 @@ dependencies:
       url: https://gitee.com/wanghongenpin/flutter-plugins.git
       path: packages/desktop_multi_window
   path_provider: ^2.1.5
-  file_picker: ^10.2.0
+  file_picker: ^10.2.4
   proxy_manager: ^0.0.3
   permission_handler: ^12.0.1
   flutter_toastr: ^1.0.3
   share_plus: ^11.0.0
-  flutter_js:
-    git:
-      url: https://github.com/abner/flutter_js
-      ref: master
+  flutter_js: ^0.8.5
   flutter_code_editor:
     git:
       url: https://github.com/wanghongenpin/flutter-code-editor.git
