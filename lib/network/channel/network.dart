@@ -70,27 +70,67 @@ class Server extends Network {
   late ServerSocket serverSocket;
   bool isRunning = false;
   EventListener? listener;
+  StreamSubscription? serverSubscription;
+  final List<Channel> _connections = [];
+  Timer? _connectionCleanupTimer;
 
   Server(this.configuration, {this.listener});
 
   Future<ServerSocket> bind(int port) async {
     serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    serverSocket.listen((socket) {
+    serverSubscription = serverSocket.listen((socket) {
       var channel = Channel(socket);
+      _connections.add(channel);
+
+      socket.done.whenComplete(() => _connections.remove(channel));
+
       ChannelContext channelContext = ChannelContext();
       channelContext.clientChannel = channel;
       channelContext.listener = listener;
       listen(channel, channelContext);
     });
     isRunning = true;
+    _connectionCleanupTimer = Timer.periodic(const Duration(seconds: 120), (timer) {
+      if (!isRunning) {
+        timer.cancel();
+        _connectionCleanupTimer = null;
+        return;
+      }
+      cleanupConnections();
+    });
     return serverSocket;
   }
 
   Future<ServerSocket> stop() async {
     if (!isRunning) return serverSocket;
     isRunning = false;
+    for (var channel in _connections) {
+      if (channel.isClosed) continue;
+      try {
+        logger.d('Closing socket: ${channel.remoteSocketAddress.host}:${channel.remoteSocketAddress.port}');
+        channel.close();
+      } catch (e) {
+        logger.e('Error closing socket: $e');
+      }
+    }
+    _connections.clear();
+    //关闭监听
+    serverSubscription?.cancel();
+    serverSubscription = null;
     await serverSocket.close();
+    _connectionCleanupTimer?.cancel();
+    _connectionCleanupTimer = null;
     return serverSocket;
+  }
+
+  void cleanupConnections() {
+    _connections.removeWhere((channel) {
+      if (channel.isClosed) {
+        logger.i('Cleaning up closed channel: ${channel.remoteSocketAddress.host}:${channel.remoteSocketAddress.port}');
+        return true;
+      }
+      return false;
+    });
   }
 
   @override
