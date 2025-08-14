@@ -28,10 +28,8 @@ import 'package:proxypin/ui/mobile/mobile.dart';
 import 'package:proxypin/utils/navigator.dart';
 import 'package:proxypin/utils/platform.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:windows_single_instance/windows_single_instance.dart';
 
 import 'l10n/app_localizations.dart';
-import 'network/util/logger.dart';
 
 ///主入口
 ///@author wanghongen
@@ -44,13 +42,6 @@ void main(List<String> args) async {
     final argument = args[2].isEmpty ? const {} : jsonDecode(args[2]) as Map<String, dynamic>;
     runApp(FluentApp(multiWindow(windowId, argument), (await AppConfiguration.instance)));
     return;
-  }
-
-  if (Platform.isWindows) {
-    await WindowsSingleInstance.ensureSingleInstance([], "ProxyPin", onSecondWindow: (args) {
-      logger.d('WindowsSingleInstance onSecondWindow $args');
-      windowManager.show();
-    });
   }
 
   var instance = AppConfiguration.instance;
