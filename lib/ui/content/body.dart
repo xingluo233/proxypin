@@ -172,7 +172,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
       isImage
           ? downloadImageButton()
           : IconButton(
-              icon: Icon(Icons.copy, size: 18),
+              icon: Icon(Icons.copy, size: 16),
               tooltip: localizations.copy,
               onPressed: () async {
                 var body = await bodyKey.currentState?.getBody();
@@ -188,14 +188,14 @@ class HttpBodyState extends State<HttpBodyWidget> {
     if (!widget.hideRequestRewrite) {
       list.add(const SizedBox(width: 3));
       list.add(IconButton(
-          icon: const Icon(Icons.edit_document, size: 18),
+          icon: const Icon(Icons.edit_document, size: 16),
           tooltip: localizations.requestRewrite,
           onPressed: showRequestRewrite));
     }
 
     list.add(const SizedBox(width: 3));
     list.add(IconButton(
-        icon: const Icon(Icons.text_format, size: 21),
+        icon: const Icon(Icons.text_format, size: 18),
         tooltip: localizations.encode,
         onPressed: () async {
           var body = await bodyKey.currentState?.getBody();
@@ -206,7 +206,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
     if (!inNewWindow) {
       list.add(const SizedBox(width: 3));
       list.add(IconButton(
-          icon: const Icon(Icons.open_in_new, size: 18), tooltip: localizations.newWindow, onPressed: () => openNew()));
+          icon: const Icon(Icons.open_in_new, size: 16), tooltip: localizations.newWindow, onPressed: () => openNew()));
     }
 
     return Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: list);

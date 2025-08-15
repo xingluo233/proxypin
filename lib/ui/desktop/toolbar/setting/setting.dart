@@ -28,7 +28,6 @@ import 'package:proxypin/ui/desktop/toolbar/setting/about.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/external_proxy.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/hosts.dart';
 import 'package:proxypin/ui/desktop/toolbar/setting/request_block.dart';
-import 'package:proxypin/ui/desktop/toolbar/setting/request_map.dart';
 
 import 'filter.dart';
 
@@ -60,7 +59,7 @@ class _SettingState extends State<Setting> {
     return MenuAnchor(
       builder: (context, controller, child) {
         return IconButton(
-            icon: const Icon(Icons.settings, size: 22),
+            icon: const Icon(Icons.settings, size: 21),
             tooltip: localizations.setting,
             onPressed: () {
               if (controller.isOpen) {

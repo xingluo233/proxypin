@@ -38,7 +38,7 @@ import 'package:proxypin/ui/configuration.dart';
 import 'package:proxypin/ui/content/panel.dart';
 import 'package:proxypin/ui/launch/launch.dart';
 import 'package:proxypin/ui/mobile/menu/drawer.dart';
-import 'package:proxypin/ui/mobile/menu/me.dart';
+import 'package:proxypin/ui/mobile/menu/bottom_navigation.dart';
 import 'package:proxypin/ui/mobile/menu/menu.dart';
 import 'package:proxypin/ui/mobile/request/list.dart';
 import 'package:proxypin/ui/mobile/request/search.dart';
@@ -136,7 +136,8 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
 
   var requestPageNavigatorKey = GlobalKey<NavigatorState>();
   var toolboxNavigatorKey = GlobalKey<NavigatorState>();
-  var mePageNavigatorKey = GlobalKey<NavigatorState>();
+  var configNavigatorKey = GlobalKey<NavigatorState>();
+  var settingNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +155,10 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
                       centerTitle: true)),
               body: Toolbox(proxyServer: proxyServer))),
-      NavigatorPage(navigatorKey: mePageNavigatorKey, child: MePage(proxyServer: proxyServer)),
+      NavigatorPage(navigatorKey: configNavigatorKey, child: ConfigPage(proxyServer: proxyServer)),
+      NavigatorPage(
+          navigatorKey: settingNavigatorKey,
+          child: SettingPage(proxyServer: proxyServer, appConfiguration: widget.appConfiguration)),
     ];
 
     if (!widget.appConfiguration.bottomNavigation) _selectIndex.value = 0;
@@ -191,19 +195,32 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
                 body: IndexedStack(index: index, children: navigationView),
                 bottomNavigationBar: widget.appConfiguration.bottomNavigation
                     ? Container(
-                        constraints: const BoxConstraints(maxHeight: 80),
+                        constraints: const BoxConstraints(maxHeight: 85),
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
                           child: BottomNavigationBar(
-                            selectedIconTheme: const IconThemeData(size: 27),
-                            unselectedIconTheme: const IconThemeData(size: 27),
+                            type: BottomNavigationBarType.fixed,
+                            selectedIconTheme: const IconThemeData(size: 26),
+                            unselectedIconTheme: const IconThemeData(size: 26),
                             selectedFontSize: 0,
+                            elevation: 0,
                             items: [
                               BottomNavigationBarItem(
-                                  icon: const Icon(Icons.workspaces), label: localizations.requests),
+                                  tooltip: localizations.requests,
+                                  icon: const Icon(Icons.workspaces_outlined),
+                                  label: localizations.requests),
                               BottomNavigationBarItem(
-                                  icon: const Icon(Icons.construction), label: localizations.toolbox),
-                              BottomNavigationBarItem(icon: const Icon(Icons.person), label: localizations.me),
+                                  tooltip: localizations.toolbox,
+                                  icon: const Icon(Icons.hardware_outlined),
+                                  label: localizations.toolbox),
+                              BottomNavigationBarItem(
+                                  tooltip: localizations.config,
+                                  icon: const Icon(Icons.description_outlined),
+                                  label: localizations.config),
+                              BottomNavigationBarItem(
+                                  tooltip: localizations.setting,
+                                  icon: const Icon(Icons.settings_outlined),
+                                  label: localizations.setting),
                             ],
                             currentIndex: _selectIndex.value,
                             onTap: (index) => _selectIndex.value = index,
