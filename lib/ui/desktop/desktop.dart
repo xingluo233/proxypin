@@ -109,7 +109,12 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
     ];
 
     return Scaffold(
-        appBar: Tab(child: Toolbar(proxyServer, requestListStateKey, sideNotifier: _selectIndex)),
+        appBar: Tab(
+            child: Container(
+          decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.25), width: 0.2))),
+          child: Toolbar(proxyServer, requestListStateKey, sideNotifier: _selectIndex),
+        )),
         body: Row(
           children: [
             LeftNavigationBar(

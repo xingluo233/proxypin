@@ -91,7 +91,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
         child: Scaffold(
             appBar: AppBar(
               toolbarHeight: 40,
-              title: SizedBox(height: 40, child: TabBar(tabs: tabs)),
+              title: SizedBox(height: 40, child: TabBar(tabs: tabs, dividerColor: Colors.transparent)),
               automaticallyImplyLeading: false,
               actions: [popupMenus()],
             ),

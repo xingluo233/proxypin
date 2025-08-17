@@ -42,19 +42,19 @@ class _LeftNavigationBarState extends State<LeftNavigationBar> {
 
   List<NavigationRailDestination> get destinations => [
         NavigationRailDestination(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 5),
             icon: Icon(Icons.workspaces_outlined),
             label: Text(localizations.requests, style: Theme.of(context).textTheme.bodySmall)),
         NavigationRailDestination(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 5),
             icon: Icon(Icons.favorite_outline_outlined),
             label: Text(localizations.favorites, style: Theme.of(context).textTheme.bodySmall)),
         NavigationRailDestination(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 5),
             icon: Icon(Icons.history_outlined),
             label: Text(localizations.history, style: Theme.of(context).textTheme.bodySmall)),
         NavigationRailDestination(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 5),
             icon: Icon(Icons.hardware_outlined),
             label: Text(localizations.toolbox, style: Theme.of(context).textTheme.bodySmall)),
       ];
@@ -69,7 +69,7 @@ class _LeftNavigationBarState extends State<LeftNavigationBar> {
           }
 
           return Container(
-            width: localizations.localeName == 'en' ? 68 : 55,
+            width: localizations.localeName == 'en' ? 70 : 57,
             decoration:
                 BoxDecoration(border: Border(right: BorderSide(color: Theme.of(context).dividerColor, width: 0.2))),
             child: Column(children: <Widget>[
@@ -110,10 +110,11 @@ class _LeftNavigationBarState extends State<LeftNavigationBar> {
   //left menu eg: requests, favorites, history, toolbox
   Widget leftNavigation(int index) {
     return NavigationRail(
-        minWidth: 55,
+        minWidth: 57,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         selectedIconTheme: IconTheme.of(context).copyWith(color: Theme.of(context).colorScheme.primary, size: 22),
-        unselectedIconTheme: IconTheme.of(context).copyWith(color: Colors.black54, size: 22),
+        unselectedIconTheme:
+            IconTheme.of(context).copyWith(color: IconTheme.of(context).color?.withOpacity(0.55), size: 22),
         labelType: NavigationRailLabelType.all,
         destinations: destinations,
         selectedIndex: index,

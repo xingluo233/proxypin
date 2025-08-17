@@ -114,6 +114,7 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
     var tabBar = TabBar(
       padding: const EdgeInsets.only(bottom: 0),
       controller: _tabController,
+      dividerColor: Theme.of(context).dividerColor.withOpacity(0.15),
       labelPadding: const EdgeInsets.symmetric(horizontal: 10),
       tabs: tabs.map((title) => Tab(child: Text(title, style: widget.tabStyle, maxLines: 1))).toList(),
     );

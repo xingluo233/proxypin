@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:macos_window_utils/macos/ns_window_button_type.dart';
 import 'package:proxypin/network/bin/configuration.dart';
 import 'package:proxypin/ui/component/chinese_font.dart';
 import 'package:proxypin/ui/component/multi_window.dart';
@@ -28,6 +29,7 @@ import 'package:proxypin/ui/mobile/mobile.dart';
 import 'package:proxypin/utils/navigator.dart';
 import 'package:proxypin/utils/platform.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:macos_window_utils/macos_window_utils.dart';
 
 import 'l10n/app_localizations.dart';
 
@@ -70,7 +72,18 @@ void main(List<String> args) async {
     windowManager.setBrightness(appConfiguration.themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light);
   }
 
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
+  if (Platform.isMacOS) {
+    await WindowManipulator.initialize();
+    // 调整关闭按钮的位置
+    WindowManipulator.overrideStandardWindowButtonPosition(
+        buttonType: NSWindowButtonType.closeButton, offset: Offset(10, 16));
+    WindowManipulator.overrideStandardWindowButtonPosition(
+        buttonType: NSWindowButtonType.miniaturizeButton, offset: const Offset(29, 16));
+    WindowManipulator.overrideStandardWindowButtonPosition(
+        buttonType: NSWindowButtonType.zoomButton, offset: const Offset(48, 16));
+  }
+
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
     if (windowPosition != null) {
       await windowManager.setPosition(windowPosition);
     }
@@ -116,7 +129,7 @@ class FluentApp extends StatelessWidget {
     bool isDark = brightness == Brightness.dark;
 
     Color? themeColor = isDark ? appConfiguration.themeColor : appConfiguration.themeColor;
-    Color? cardColor = isDark ? Colors.grey[850]! : Colors.white;
+    Color? cardColor = isDark ? Color(0XFF3C3C3C) : Colors.white;
     Color? surfaceContainer = isDark ? Colors.grey[800] : Colors.white;
 
     Color? secondary = useMaterial3 ? null : themeColor;
