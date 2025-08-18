@@ -170,9 +170,9 @@ class Channel {
       await Future.delayed(const Duration(milliseconds: 150));
     }
     isOpen = false;
-    if (!isWriting) {
-      await _socket.flush();
-    }
+    // if (!isWriting) {
+    //   await _socket.flush();
+    // }
     await _socket.close();
     _socket.destroy();
   }

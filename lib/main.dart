@@ -64,7 +64,7 @@ void main(List<String> args) async {
       minimumSize: const Size(1000, 600),
       size: windowSize,
       center: true,
-      titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal);
+      titleBarStyle: TitleBarStyle.hidden );
 
   Offset? windowPosition = appConfiguration.windowPosition;
 

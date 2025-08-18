@@ -208,7 +208,7 @@ class Server extends Network {
 
       Channel? remoteChannel = channelContext.serverChannel;
 
-      if (HostFilter.filter(hostAndPort.host) || !configuration.enableSsl) {
+      if (!isHttp || HostFilter.filter(hostAndPort.host) || !configuration.enableSsl) {
         remoteChannel = remoteChannel ?? await channelContext.connectServerChannel(hostAndPort, RelayHandler(channel));
         relay(channel, remoteChannel);
         channel.dispatcher.channelRead(channelContext, channel, data);

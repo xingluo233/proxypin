@@ -64,4 +64,5 @@ flutter:
     - assets/certs/ca.crt
     - assets/certs/ca_key.pem
     - assets/icon.png
+    - assets/icon_foreground.png
     - assets/js/

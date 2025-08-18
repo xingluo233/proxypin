@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/bin/configuration.dart';
@@ -32,6 +34,7 @@ import 'package:proxypin/ui/desktop/left_menus/history.dart';
 import 'package:proxypin/ui/desktop/left_menus/navigation.dart';
 import 'package:proxypin/ui/desktop/request/list.dart';
 import 'package:proxypin/ui/desktop/toolbar/toolbar.dart';
+import 'package:proxypin/ui/desktop/widgets/windows_toolbar.dart';
 import 'package:proxypin/utils/listenable_list.dart';
 
 import '../app_update/app_update_repository.dart';
@@ -111,9 +114,16 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
     return Scaffold(
         appBar: Tab(
             child: Container(
+          padding: EdgeInsets.only(bottom: 2.5),
+          margin: EdgeInsets.only(bottom: 2.5),
           decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.25), width: 0.2))),
-          child: Toolbar(proxyServer, requestListStateKey, sideNotifier: _selectIndex),
+              color: Theme.of(context).brightness == Brightness.dark ? null : Color(0xFFF9F9F9),
+              border: Border(
+                  bottom: BorderSide(
+                      color: Theme.of(context).dividerColor.withOpacity(0.3), width: Platform.isMacOS ? 0.2 : 0.55))),
+          child: Platform.isMacOS
+              ? Toolbar(proxyServer, requestListStateKey)
+              : WindowsToolbar(title: Toolbar(proxyServer, requestListStateKey)),
         )),
         body: Row(
           children: [

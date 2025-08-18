@@ -16,8 +16,9 @@
 import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/http/content_type.dart';
-import 'package:proxypin/ui/desktop/request/model/search_model.dart';
-import 'package:proxypin/ui/desktop/request/search_condition.dart';
+import 'package:proxypin/ui/component/search_condition.dart';
+
+import '../../component/model/search_model.dart';
 
 /// @author wanghongen
 /// 2023/10/8

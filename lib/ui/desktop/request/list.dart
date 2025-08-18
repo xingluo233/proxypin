@@ -27,13 +27,13 @@ import 'package:proxypin/network/http/http.dart';
 import 'package:proxypin/network/http/http_client.dart';
 import 'package:proxypin/ui/component/widgets.dart';
 import 'package:proxypin/ui/content/panel.dart';
-import 'package:proxypin/ui/desktop/request/model/search_model.dart';
 import 'package:proxypin/ui/desktop/request/request_sequence.dart';
 import 'package:proxypin/ui/desktop/request/search.dart';
 import 'package:proxypin/utils/har.dart';
 import 'package:proxypin/utils/lang.dart';
 import 'package:proxypin/utils/listenable_list.dart';
 
+import '../../component/model/search_model.dart';
 import 'domians.dart';
 
 /// @author wanghongen

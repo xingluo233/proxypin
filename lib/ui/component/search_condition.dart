@@ -19,8 +19,9 @@ import 'package:get/get.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/http/content_type.dart';
 import 'package:proxypin/network/http/http.dart';
-import 'package:proxypin/ui/desktop/request/model/search_model.dart';
 import 'package:proxypin/utils/lang.dart';
+
+import 'model/search_model.dart';
 
 /// @author wanghongen
 /// 2023/8/6

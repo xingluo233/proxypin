@@ -99,7 +99,7 @@ class _ToolboxState extends State<Toolbox> {
                         child: const Column(
                             children: [Icon(Icons.format_bold_outlined), SizedBox(height: 3), Text('Base64')]),
                       )),
-                  const SizedBox(width: 15),
+                  const SizedBox(width: 10),
                   InkWell(
                       onTap: () => encodeWindow(EncoderType.unicode, context),
                       child: Container(
@@ -107,7 +107,7 @@ class _ToolboxState extends State<Toolbox> {
                         child: const Column(
                             children: [Icon(Icons.format_underline_outlined), SizedBox(height: 3), Text('Unicode')]),
                       )),
-                  const SizedBox(width: 15),
+                  const SizedBox(width: 10),
                   InkWell(
                       onTap: () => encodeWindow(EncoderType.md5, context),
                       child: Container(
@@ -188,7 +188,7 @@ class _ToolboxState extends State<Toolbox> {
         ));
   }
 
-  httpRequest() async {
+  Future<void> httpRequest() async {
     if (Platforms.isMobile()) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => MobileRequestEditor(proxyServer: widget.proxyServer)));

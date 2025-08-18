@@ -33,9 +33,8 @@ import '../request/list.dart';
 class Toolbar extends StatefulWidget {
   final ProxyServer proxyServer;
   final GlobalKey<DesktopRequestListState> requestListStateKey;
-  final ValueNotifier<int> sideNotifier;
 
-  const Toolbar(this.proxyServer, this.requestListStateKey, {super.key, required this.sideNotifier});
+  const Toolbar(this.proxyServer, this.requestListStateKey, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -53,7 +52,6 @@ class _ToolbarState extends State<Toolbar> {
   }
 
   bool onKeyEvent(KeyEvent event) {
-
     if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
       if (ModalRoute.of(context)?.isCurrent == false) {
         Navigator.maybePop(context);
@@ -82,48 +80,34 @@ class _ToolbarState extends State<Toolbar> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(padding: EdgeInsets.only(left: Platform.isMacOS ? 80 : 30)),
-        SocketLaunch(proxyServer: widget.proxyServer, startup: widget.proxyServer.configuration.startup),
-        const Padding(padding: EdgeInsets.only(left: 18)),
-        IconButton(
-            tooltip: localizations.clear,
-            icon: const Icon(Icons.cleaning_services_outlined, size: 21),
-            onPressed: () {
-              widget.requestListStateKey.currentState?.clean();
-            }),
-        const Padding(padding: EdgeInsets.only(left: 18)),
-        SslWidget(proxyServer: widget.proxyServer), // SSL配置
-        const Padding(padding: EdgeInsets.only(left: 18)),
-        Setting(proxyServer: widget.proxyServer), // 设置
-        const Padding(padding: EdgeInsets.only(left: 18)),
-        IconButton(
-            tooltip: localizations.mobileConnect,
-            icon: const Icon(Icons.phone_iphone, size: 21),
-            onPressed: () async {
-              final ips = await localIps(readCache: false);
-              phoneConnect(ips, widget.proxyServer.port);
-            }),
-        const Expanded(child: SizedBox()), //自动扩展挤压
-        ValueListenableBuilder(
-            valueListenable: widget.sideNotifier,
-            builder: (_, sideIndex, __) => IconButton(
-                  icon: Icon(Icons.space_dashboard, size: 20, color: sideIndex >= 0 ? Colors.blueGrey : Colors.grey),
-                  onPressed: () {
-                    if (widget.sideNotifier.value >= 0) {
-                      widget.sideNotifier.value = -1;
-                    } else {
-                      widget.sideNotifier.value = 0;
-                    }
-                  },
-                )), //右对齐
-        const Padding(padding: EdgeInsets.only(left: 30)),
-      ],
-    );
+    return Row(children: [
+      Padding(padding: EdgeInsets.only(left: Platform.isMacOS ? 80 : 20)),
+      SocketLaunch(proxyServer: widget.proxyServer, startup: widget.proxyServer.configuration.startup),
+      const Padding(padding: EdgeInsets.only(left: 18)),
+      IconButton(
+          tooltip: localizations.clear,
+          icon: const Icon(Icons.cleaning_services_outlined, size: 21),
+          onPressed: () {
+            widget.requestListStateKey.currentState?.clean();
+          }),
+      const Padding(padding: EdgeInsets.only(left: 18)),
+      SslWidget(proxyServer: widget.proxyServer), // SSL配置
+      const Padding(padding: EdgeInsets.only(left: 18)),
+      Setting(proxyServer: widget.proxyServer), // 设置
+      const Padding(padding: EdgeInsets.only(left: 18)),
+      IconButton(
+          tooltip: localizations.mobileConnect,
+          icon: const Icon(Icons.phone_iphone, size: 21),
+          onPressed: () async {
+            final ips = await localIps(readCache: false);
+            phoneConnect(ips, widget.proxyServer.port);
+          }),
+
+      const Padding(padding: EdgeInsets.only(left: 30)),
+    ]);
   }
 
-  phoneConnect(List<String> hosts, int port) {
+  void phoneConnect(List<String> hosts, int port) {
     showDialog(
         context: context,
         builder: (context) {
