@@ -61,15 +61,17 @@ class _SocketLaunchState extends State<SocketLaunch> with WindowListener, Widget
   @override
   void initState() {
     super.initState();
-    windowManager.addListener(this);
+    if (Platforms.isDesktop()) {
+      windowManager.addListener(this);
+      windowManager.setPreventClose(true);
+    }
+
     WidgetsBinding.instance.addObserver(this);
     //启动代理服务器
     if (widget.startup) {
       start();
     }
-    if (Platforms.isDesktop()) {
-      windowManager.setPreventClose(true);
-    }
+
     SocketLaunch.startStatus.addListener(() {
       if (SocketLaunch.startStatus.value.get() == started) {
         return;
@@ -117,7 +119,7 @@ class _SocketLaunchState extends State<SocketLaunch> with WindowListener, Widget
         widget.proxyServer.retryBind();
       }
 
-      if (Platforms.isMobile()) {
+      if (Platforms.isMobile() && started == false) {
         Vpn.isRunning().then((value) {
           Vpn.isVpnStarted = value;
           SocketLaunch.startStatus.value = ValueWrap.of(value);
@@ -163,7 +165,7 @@ class _SocketLaunchState extends State<SocketLaunch> with WindowListener, Widget
   }
 
   ///启动代理服务器
-  start() async {
+  Future<void> start() async {
     if (!widget.serverLaunch) {
       await widget.onStart?.call();
       setState(() {

@@ -117,7 +117,6 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
           padding: EdgeInsets.only(bottom: 2.5),
           margin: EdgeInsets.only(bottom: 2.5),
           decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark ? null : Color(0xFFF9F9F9),
               border: Border(
                   bottom: BorderSide(
                       color: Theme.of(context).dividerColor.withOpacity(0.3), width: Platform.isMacOS ? 0.2 : 0.55))),
