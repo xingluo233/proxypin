@@ -52,7 +52,7 @@ class ProcessInfoManager private constructor() {
 
             val uid = getProcessInfoUid(sourceAddress, destinationAddress)
             val channel = connection.channel
-            if (uid != null && uid != Process.INVALID_UID && channel is SocketChannel) {
+            if (uid != null && uid != Process.INVALID_UID && channel is SocketChannel && channel.isOpen) {
                 val localAddress = channel.localAddress as InetSocketAddress
                 val networkInfo =
                     NetworkInfo(uid, destinationAddress.hostString, destinationAddress.port)
@@ -67,7 +67,7 @@ class ProcessInfoManager private constructor() {
         }
 
         val channel = connection.channel
-        if (channel is SocketChannel) {
+        if (channel is SocketChannel && channel.isOpen) {
             val localAddress = channel.localAddress as InetSocketAddress
             localPortCache.remove(localAddress.port)
         }
@@ -86,24 +86,29 @@ class ProcessInfoManager private constructor() {
         val connectivityManager: ConnectivityManager =
             activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        val uid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return connectivityManager.getConnectionOwnerUid(
-                OsConstants.IPPROTO_TCP, localAddress, remoteAddress
-            )
-        } else {
-            val method = ConnectivityManager::class.java.getMethod(
-                "getConnectionOwnerUid",
-                Int::class.javaPrimitiveType,
-                InetSocketAddress::class.java,
-                InetSocketAddress::class.java
-            )
-            return method.invoke(
-                connectivityManager, OsConstants.IPPROTO_TCP, localAddress, remoteAddress
-            ) as Int
-        }
+        try {
+            val uid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                connectivityManager.getConnectionOwnerUid(
+                    OsConstants.IPPROTO_TCP, localAddress, remoteAddress
+                )
+            } else {
+                val method = ConnectivityManager::class.java.getMethod(
+                    "getConnectionOwnerUid",
+                    Int::class.javaPrimitiveType,
+                    InetSocketAddress::class.java,
+                    InetSocketAddress::class.java
+                )
+                method.invoke(
+                    connectivityManager, OsConstants.IPPROTO_TCP, localAddress, remoteAddress
+                ) as Int
+            }
 
-        if (uid != Process.INVALID_UID) {
-            return uid
+            if (uid != Process.INVALID_UID) {
+                return uid
+            }
+        } catch (e: Exception) {
+            Log.w("ProcessInfoManager", "Exception in getProcessInfoUid", e)
+            return null
         }
 
         Log.w(

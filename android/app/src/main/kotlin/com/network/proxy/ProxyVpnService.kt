@@ -50,7 +50,7 @@ class ProxyVpnService : VpnService(), ProtectSocket {
         var isRunning = false
 
         var host: String? = null
-        var port: Int = 0
+        var port: Int = 9099
         var allowApps: ArrayList<String>? = null
         var disallowApps: ArrayList<String>? = null
 
@@ -110,7 +110,7 @@ class ProxyVpnService : VpnService(), ProtectSocket {
             START_NOT_STICKY
         } else {
             connect(
-                intent.getStringExtra(PROXY_HOST_KEY) ?: host!!,
+                intent.getStringExtra(PROXY_HOST_KEY) ?: host ?? "127.0.0.1",
                 intent.getIntExtra(PROXY_PORT_KEY, port),
                 intent.getStringArrayListExtra(ALLOW_APPS_KEY) ?: allowApps,
                 intent.getStringArrayListExtra(DISALLOW_APPS_KEY)
