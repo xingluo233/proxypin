@@ -110,7 +110,7 @@ class ProxyVpnService : VpnService(), ProtectSocket {
             START_NOT_STICKY
         } else {
             connect(
-                intent.getStringExtra(PROXY_HOST_KEY) ?: host ?? "127.0.0.1",
+                intent.getStringExtra(PROXY_HOST_KEY) ?: (host ?: "127.0.0.1"),
                 intent.getIntExtra(PROXY_PORT_KEY, port),
                 intent.getStringArrayListExtra(ALLOW_APPS_KEY) ?: allowApps,
                 intent.getStringArrayListExtra(DISALLOW_APPS_KEY)
