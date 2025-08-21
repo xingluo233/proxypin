@@ -155,7 +155,7 @@ class FluentApp extends StatelessWidget {
       themeData = themeData.copyWith(
         appBarTheme: themeData.appBarTheme.copyWith(
           iconTheme: themeData.iconTheme.copyWith(size: 20),
-          color: themeData.canvasColor,
+          backgroundColor: themeData.canvasColor,
           elevation: 0,
           titleTextStyle: themeData.textTheme.titleMedium,
         ),

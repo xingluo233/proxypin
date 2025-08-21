@@ -1,5 +1,5 @@
 name: Bug report
-about: Create reports to help us improve
+description: Create reports to help us improve
 labels: bug
 body:
   - type: dropdown

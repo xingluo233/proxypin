@@ -85,8 +85,10 @@ class SearchConditionsState extends State<SearchConditions> {
                   hintText: localizations.keyword,
                   suffixIcon: Obx(() => IconButton(
                         tooltip: "Case Sensitive",
-                        color: searchModel.caseSensitive.value ? primaryColor : null,
-                        icon: Icon(Icons.text_fields),
+                        icon: Text('Aa',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: searchModel.caseSensitive.value ? primaryColor : null)),
                         onPressed: () {
                           searchModel.caseSensitive.value = !searchModel.caseSensitive.value;
                         },

@@ -88,6 +88,9 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
   final TextStyle textStyle = const TextStyle(fontSize: 14);
   late TabController _tabController;
 
+  final GlobalKey<HttpBodyState> requestHttpBodyKey = GlobalKey<HttpBodyState>();
+  final GlobalKey<HttpBodyState> responseHttpBodyKey = GlobalKey<HttpBodyState>();
+
   void changeState() {
     setState(() {});
   }
@@ -98,6 +101,14 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index != 1) {
+        requestHttpBodyKey.currentState?.hideSearchOverlay();
+      }
+      if (_tabController.index != 2) {
+        responseHttpBodyKey.currentState?.hideSearchOverlay();
+      }
+    });
   }
 
   @override
@@ -255,7 +266,10 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
       }
     });
 
-    Widget bodyWidgets = HttpBodyWidget(httpMessage: message, scrollController: scrollController);
+    Widget bodyWidgets = HttpBodyWidget(
+        key: type == "Request" ? requestHttpBodyKey : responseHttpBodyKey,
+        httpMessage: message,
+        scrollController: scrollController);
 
     Widget headerWidget = ExpansionTile(
         tilePadding: const EdgeInsets.only(left: 0),

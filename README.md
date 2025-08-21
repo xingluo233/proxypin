@@ -30,7 +30,8 @@ If ProxyPin is helpful to you, you are welcome to support us in the following wa
 
 **Your support will be used for project maintenance, feature development, and user experience optimization. Thank you very much!**
 
-Download： https://github.com/wanghongenpin/proxypin/releases
+
+Downloads： https://github.com/wanghongenpin/proxypin/releases
 
 iOS App Store：https://apps.apple.com/app/proxypin/id6450932949
 

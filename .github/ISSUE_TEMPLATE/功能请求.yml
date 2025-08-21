@@ -1,5 +1,5 @@
 name: 功能请求
-about: 为这个项目提出一个想法
+description: 为这个项目提出一个想法
 labels: enhancement
 body:
   - type: dropdown
