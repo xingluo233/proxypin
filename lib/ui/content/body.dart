@@ -98,6 +98,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
   void dispose() {
     HardwareKeyboard.instance.removeHandler(onKeyEvent);
     searchController.dispose();
+    widget.scrollController?.dispose();
     super.dispose();
   }
 
@@ -468,12 +469,13 @@ class _BodyState extends State<_Body> {
           return JsonText(
               json: jsonObject,
               indent: Platforms.isDesktop() ? '    ' : '  ',
-              colorTheme: ColorTheme.of(Theme.of(context).brightness),
+              colorTheme: ColorTheme.of(context),
+              searchController: widget.searchController,
               scrollController: widget.scrollController);
         }
 
         if (type == ViewType.json) {
-          return JsonViewer(json.decode(body), colorTheme: ColorTheme.of(Theme.of(context).brightness));
+          return JsonViewer(json.decode(body), colorTheme: ColorTheme.of(context));
         }
 
         return HighlightTextWidget(

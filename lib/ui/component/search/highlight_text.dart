@@ -47,6 +47,7 @@ class HighlightTextWidget extends StatelessWidget {
     int start = 0;
     var allMatches = regex.allMatches(text).toList();
     final currentIndex = searchController.currentMatchIndex.value;
+    ColorScheme colorScheme = ColorScheme.of(context);
     List<int> matchOffsets = [];
     for (int i = 0; i < allMatches.length; i++) {
       final match = allMatches[i];
@@ -57,7 +58,7 @@ class HighlightTextWidget extends StatelessWidget {
       spans.add(TextSpan(
         text: text.substring(match.start, match.end),
         style: TextStyle(
-          backgroundColor: i == currentIndex ? Colors.orange : Colors.yellow,
+          backgroundColor: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
         ),
       ));
       start = match.end;
@@ -87,10 +88,6 @@ class HighlightTextWidget extends StatelessWidget {
     );
     tp.layout(maxWidth: scrollController!.position.viewportDimension);
     final offset = tp.height;
-    scrollController!.animateTo(
-      offset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    scrollController!.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
 }

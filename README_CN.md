@@ -30,10 +30,11 @@
 
 **您的支持将用于项目的维护、功能开发和用户体验优化，非常感谢！**    
 
+## 下载地址
 
-国内下载地址： https://gitee.com/wanghongenpin/proxypin/releases
+国内下载： https://gitee.com/wanghongenpin/proxypin/releases
 
-iOS AppStore下载地址： https://apps.apple.com/app/proxypin/id6450932949      
+iOS App Store： https://apps.apple.com/app/proxypin/id6450932949      
 
 Android Google Play：https://play.google.com/store/apps/details?id=com.network.proxy
 
