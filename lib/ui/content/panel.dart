@@ -232,10 +232,10 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
       path = Uri.decodeFull(path);
     } catch (_) {}
 
-    return ListView(
+    return SingleChildScrollView(
         controller: scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [RowWidget("Path", path), ...message(widget.request.get(), "Request", scrollController)]);
+        child:
+            Column(children: [RowWidget("Path", path), ...message(widget.request.get(), "Request", scrollController)]));
   }
 
   Widget response() {
@@ -244,10 +244,12 @@ class NetworkTabState extends State<NetworkTabController> with SingleTickerProvi
     }
 
     var scrollController = ScrollController();
-    return ListView(controller: scrollController, physics: const AlwaysScrollableScrollPhysics(), children: [
-      RowWidget("StatusCode", widget.response.get()?.status.toString()),
-      ...message(widget.response.get(), "Response", scrollController)
-    ]);
+    return SingleChildScrollView(
+        controller: scrollController,
+        child: Column(children: [
+          RowWidget("StatusCode", widget.response.get()?.status.toString()),
+          ...message(widget.response.get(), "Response", scrollController)
+        ]));
   }
 
   List<Widget> message(HttpMessage? message, String type, ScrollController scrollController) {

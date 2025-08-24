@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:proxypin/network/util/logger.dart';
 import 'package:proxypin/ui/component/search/search_field.dart';
 
 class SearchTextController extends ValueNotifier<SearchSettings> {
@@ -76,10 +77,11 @@ class SearchTextController extends ValueNotifier<SearchSettings> {
 
   @override
   void dispose() {
+    logger.d('Disposing SearchTextController');
+    removeSearchOverlay();
     patternController.dispose();
     totalMatchCount.close();
     currentMatchIndex.close();
-    removeSearchOverlay();
     super.dispose();
   }
 
@@ -100,8 +102,8 @@ class SearchTextController extends ValueNotifier<SearchSettings> {
   }
 
   OverlayEntry _buildSearchOverlay(BuildContext context, {double? top, double? right}) {
-    overlayTop ??= top;
-    overlayRight ??= right;
+    overlayTop = top ?? overlayTop;
+    overlayRight = right ?? overlayRight;
     return OverlayEntry(
       builder: (context) {
         return Positioned(

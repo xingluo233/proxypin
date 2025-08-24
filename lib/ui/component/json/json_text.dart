@@ -48,7 +48,7 @@ class _JsonTextState extends State<JsonText> {
   SearchTextController? searchController;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     searchController = widget.searchController;
   }
@@ -57,7 +57,6 @@ class _JsonTextState extends State<JsonText> {
   void dispose() {
     trackingScrollController?.dispose();
     trackingScrollController = null;
-    logger.d('JsonText dispose');
     super.dispose();
   }
 
@@ -72,13 +71,6 @@ class _JsonTextState extends State<JsonText> {
         return jsonTextWidget(context);
       },
     );
-  }
-
-  double getAvailableHeight(BuildContext context) {
-    // 获取当前组件可用高度（屏幕高度减去系统padding和AppBar高度等）
-    final mediaQuery = MediaQuery.of(context);
-    final appBar = Scaffold.of(context).appBarMaxHeight ?? 0;
-    return mediaQuery.size.height - mediaQuery.padding.top - appBar;
   }
 
   Widget jsonTextWidget(BuildContext context) {
@@ -109,8 +101,6 @@ class _JsonTextState extends State<JsonText> {
         final key = jsonParser.matchKeys[currentIndex];
         final context = key.currentContext;
         if (context != null) {
-          logger.d('scrollToMatch: currentIndex=$currentIndex, key=$key');
-
           Scrollable.ensureVisible(
             context,
             duration: const Duration(milliseconds: 300),

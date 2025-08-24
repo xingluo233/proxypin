@@ -70,6 +70,7 @@ class HttpBodyWidget extends StatefulWidget {
 class HttpBodyState extends State<HttpBodyWidget> {
   var bodyKey = GlobalKey<_BodyState>();
   int tabIndex = 0;
+  final searchIconKey = GlobalKey();
   final SearchTextController searchController = SearchTextController();
 
   AppLocalizations get localizations => AppLocalizations.of(context)!;
@@ -142,12 +143,39 @@ class HttpBodyState extends State<HttpBodyWidget> {
               searchController: searchController)) //body
     ];
 
-    var tabController = DefaultTabController(
-        initialIndex: tabIndex,
-        length: tabs.list.length,
-        child: widget.inNewWindow
-            ? ListView(children: list)
-            : Column(crossAxisAlignment: CrossAxisAlignment.start, children: list));
+    var tabController = FocusableActionDetector(
+        shortcuts: {
+          LogicalKeySet(
+                  Platform.isMacOS ? LogicalKeyboardKey.meta : LogicalKeyboardKey.control, LogicalKeyboardKey.keyF):
+              ActivateIntent(),
+          LogicalKeySet(LogicalKeyboardKey.escape): DismissIntent(),
+        },
+        actions: {
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (intent) {
+              if (searchController.isSearchOverlayVisible) {
+                hideSearchOverlay();
+              } else {
+                RenderBox renderBox = searchIconKey.currentContext?.findRenderObject() as RenderBox;
+                Offset position = renderBox.localToGlobal(Offset.zero); // 获取搜索图标的位置
+                searchController.showSearchOverlay(context, top: position.dy + renderBox.size.height + 50, right: 10);
+              }
+              return null;
+            },
+          ),
+          DismissIntent: CallbackAction<DismissIntent>(
+            onInvoke: (intent) {
+              hideSearchOverlay();
+              return null;
+            },
+          ),
+        },
+        child: DefaultTabController(
+            initialIndex: tabIndex,
+            length: tabs.list.length,
+            child: widget.inNewWindow
+                ? ListView(children: list)
+                : Column(crossAxisAlignment: CrossAxisAlignment.start, children: list)));
 
     //在新窗口打开
     if (widget.inNewWindow) {
@@ -180,13 +208,16 @@ class HttpBodyState extends State<HttpBodyWidget> {
       Text('$type Body', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
       const SizedBox(width: 18),
       InkWell(
+        key: searchIconKey,
         child: Icon(Icons.search, size: 20),
         // tooltip: localizations.search,
-        onTapDown: (TapDownDetails details) {
+        onTap: () {
           if (searchController.isSearchOverlayVisible) {
             searchController.removeSearchOverlay();
           } else {
-            searchController.showSearchOverlay(context, top: details.globalPosition.dy + 50, right: 10);
+            RenderBox renderBox = searchIconKey.currentContext?.findRenderObject() as RenderBox;
+            Offset position = renderBox.localToGlobal(Offset.zero); // 获取搜索图标的位置
+            searchController.showSearchOverlay(context, top: position.dy + renderBox.size.height + 50, right: 10);
           }
         },
       ),

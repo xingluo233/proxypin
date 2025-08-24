@@ -30,7 +30,7 @@ class HighlightTextWidget extends StatelessWidget {
     );
   }
 
-  List<TextSpan> _highlightMatches(BuildContext context) {
+  List<InlineSpan> _highlightMatches(BuildContext context) {
     if (!searchController.shouldSearch()) {
       return [TextSpan(text: text)];
     }
@@ -43,24 +43,27 @@ class HighlightTextWidget extends StatelessWidget {
             caseSensitive: searchController.value.isCaseSensitive,
           );
 
-    final spans = <TextSpan>[];
+    final spans = <InlineSpan>[];
     int start = 0;
     var allMatches = regex.allMatches(text).toList();
     final currentIndex = searchController.currentMatchIndex.value;
     ColorScheme colorScheme = ColorScheme.of(context);
-    List<int> matchOffsets = [];
+    List<GlobalKey> matchKeys = [];
     for (int i = 0; i < allMatches.length; i++) {
       final match = allMatches[i];
       if (match.start > start) {
         spans.add(TextSpan(text: text.substring(start, match.start)));
       }
-      matchOffsets.add(match.start);
-      spans.add(TextSpan(
-        text: text.substring(match.start, match.end),
-        style: TextStyle(
-          backgroundColor: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
-        ),
-      ));
+
+      // 为每个高亮项分配一个 GlobalKey
+      final key = GlobalKey();
+      matchKeys.add(key);
+      spans.add(WidgetSpan(
+          child: Container(
+        key: key,
+        color: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
+        child: Text(text.substring(match.start, match.end)),
+      )));
       start = match.end;
     }
     if (start < text.length) {
@@ -69,25 +72,28 @@ class HighlightTextWidget extends StatelessWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       searchController.updateMatchCount(allMatches.length);
-      if (scrollController != null && allMatches.isNotEmpty && currentIndex < matchOffsets.length) {
-        _scrollToMatch(context, matchOffsets[currentIndex]);
-      }
+      _scrollToMatch(context, matchKeys);
+      matchKeys.clear();
     });
 
     return spans;
   }
 
-  void _scrollToMatch(BuildContext context, int charOffset) {
-    if (scrollController == null) return;
-    final textStyle = DefaultTextStyle.of(context).style;
-    final span = TextSpan(text: text.substring(0, charOffset), style: textStyle);
-    final tp = TextPainter(
-      text: span,
-      textDirection: TextDirection.ltr,
-      maxLines: null,
-    );
-    tp.layout(maxWidth: scrollController!.position.viewportDimension);
-    final offset = tp.height;
-    scrollController!.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+  void _scrollToMatch(BuildContext context, List<GlobalKey> matchKeys) {
+    if (matchKeys.isNotEmpty) {
+      final currentIndex = searchController.currentMatchIndex.value;
+      if (currentIndex >= 0 && currentIndex < matchKeys.length) {
+        final key = matchKeys[currentIndex];
+        final context = key.currentContext;
+        if (context != null) {
+
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 300),
+            alignment: 0.5, // 高亮项在视图中的位置
+          );
+        }
+      }
+    }
   }
 }
