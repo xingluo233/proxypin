@@ -24,6 +24,7 @@ import 'package:proxypin/network/http/http.dart';
 import 'package:proxypin/network/http/http_headers.dart';
 import 'package:proxypin/network/util/file_read.dart';
 import 'package:proxypin/network/util/logger.dart';
+import 'package:proxypin/network/util/uri.dart';
 import 'package:proxypin/utils/lang.dart';
 
 import 'manager/rewrite_rule.dart';
@@ -177,8 +178,7 @@ class RequestRewriteInterceptor extends Interceptor {
         default:
           break;
       }
-      requestUri = requestUri.replace(queryParameters: queryParameters);
-
+      requestUri = requestUri.replace(query: UriUtils.mapToQuery(queryParameters));
       if (requestUri.isScheme('https')) {
         request.uri = requestUri.path + (requestUri.hasQuery ? "?${requestUri.query}" : "");
       } else {
