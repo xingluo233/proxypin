@@ -89,7 +89,6 @@ abstract class HttpMessage {
   set body(List<int>? body) {
     _body = body;
     _bodyString = null;
-    packageSize = body?.length ?? 0;
   }
 
   ///获取消息体编码

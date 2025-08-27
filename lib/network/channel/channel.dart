@@ -140,7 +140,6 @@ class Channel {
       if (!isClosed) {
         _socket.add(bytes);
       }
-
     } catch (e, t) {
       if (e is StateError && e.message == "StreamSink is closed") {
         logger.w("[$id] $remoteSocketAddress write error channel is closed $e", stackTrace: t);
