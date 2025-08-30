@@ -51,6 +51,11 @@ abstract class Network {
         onError: (error, StackTrace trace) =>
             channel.dispatcher.exceptionCaught(channelContext, channel, error, trace: trace),
         onDone: () => channel.dispatcher.channelInactive(channelContext, channel));
+
+    channel.socket.done.onError((error, StackTrace trace) {
+      logger.e('[${channelContext.clientChannel?.id}] socket done error', error: error, stackTrace: trace);
+      channel.dispatcher.exceptionCaught(channelContext, channel, error, trace: trace);
+    });
     return channel;
   }
 

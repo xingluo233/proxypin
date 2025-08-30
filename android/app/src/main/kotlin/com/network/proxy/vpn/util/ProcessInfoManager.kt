@@ -83,10 +83,10 @@ class ProcessInfoManager private constructor() {
             return null
         }
 
-        val connectivityManager: ConnectivityManager =
-            activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
         try {
+            val connectivityManager: ConnectivityManager =
+                activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
             val uid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 connectivityManager.getConnectionOwnerUid(
                     OsConstants.IPPROTO_TCP, localAddress, remoteAddress
