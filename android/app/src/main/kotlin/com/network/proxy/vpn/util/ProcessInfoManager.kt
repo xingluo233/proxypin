@@ -122,11 +122,14 @@ class ProcessInfoManager private constructor() {
         val networkInfo = localPortCache.get(localPort)
         if (networkInfo != null) {
             val processInfo = getProcessInfo(networkInfo.uid)
-
-            return processInfo?.apply {
-                put("remoteHost", networkInfo.remoteHost)
-                put("remotePort", networkInfo.remotePort)
+            if (processInfo != null) {
+                // 返回副本，避免并发修改异常
+                val result = HashMap(processInfo)
+                result["remoteHost"] = networkInfo.remoteHost
+                result["remotePort"] = networkInfo.remotePort
+                return result
             }
+            return null
         }
 
         if (host == null || localPort <= 0 || ProxyVpnService.host == null || ProxyVpnService.port <= 0) {
@@ -180,7 +183,14 @@ class ProcessInfoManager private constructor() {
         if (appInfo != null) return appInfo
 
         val packageManager = activity?.packageManager
-        val pkgNames = packageManager?.getPackagesForUid(uid) ?: return null
+        val pkgNames: Array<String>? = try {
+            packageManager?.getPackagesForUid(uid)
+        } catch (e: Exception) {
+            Log.w("ProcessInfoManager", "getPackagesForUid SecurityException: $uid", e)
+            null
+        }
+        if (pkgNames == null) return null
+
         for (pkgName in pkgNames) {
             val applicationInfo = packageManager.getApplicationInfo(pkgName, 0)
             appInfo = ProcessInfo.create(packageManager, applicationInfo)
