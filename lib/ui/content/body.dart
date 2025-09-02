@@ -15,6 +15,7 @@
  */
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:file_picker/file_picker.dart';
@@ -158,7 +159,9 @@ class HttpBodyState extends State<HttpBodyWidget> {
               } else {
                 RenderBox renderBox = searchIconKey.currentContext?.findRenderObject() as RenderBox;
                 Offset position = renderBox.localToGlobal(Offset.zero); // 获取搜索图标的位置
-                searchController.showSearchOverlay(context, top: position.dy + renderBox.size.height + 50, right: 10);
+
+                searchController.showSearchOverlay(context,
+                    top: max(position.dy + renderBox.size.height + 50, 100), right: 10);
               }
               return null;
             },
@@ -481,7 +484,6 @@ class _BodyState extends State<_Body> {
       return HighlightTextWidget(
           text: message!.body!.map(intToHex).join(" "),
           searchController: widget.searchController,
-          scrollController: widget.scrollController,
           contextMenuBuilder: contextMenu);
     }
 
@@ -489,7 +491,6 @@ class _BodyState extends State<_Body> {
       return HighlightTextWidget(
           text: Uri.decodeFull(message!.getBodyString()),
           searchController: widget.searchController,
-          scrollController: widget.scrollController,
           contextMenuBuilder: contextMenu);
     }
 
@@ -506,23 +507,18 @@ class _BodyState extends State<_Body> {
         }
 
         if (type == ViewType.json) {
-          return JsonViewer(json.decode(body), colorTheme: ColorTheme.of(context));
+          return JsonViewer(json.decode(body),
+              colorTheme: ColorTheme.of(context), searchController: widget.searchController);
         }
 
         return HighlightTextWidget(
-            text: body,
-            searchController: widget.searchController,
-            scrollController: widget.scrollController,
-            contextMenuBuilder: contextMenu);
+            text: body, searchController: widget.searchController, contextMenuBuilder: contextMenu);
       } catch (e) {
         logger.e(e, stackTrace: StackTrace.current);
       }
 
       return HighlightTextWidget(
-          text: body,
-          searchController: widget.searchController,
-          scrollController: widget.scrollController,
-          contextMenuBuilder: contextMenu);
+          text: body, searchController: widget.searchController, contextMenuBuilder: contextMenu);
     });
   }
 }

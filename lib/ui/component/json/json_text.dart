@@ -288,13 +288,17 @@ class JsonParser {
       // 为每个高亮项分配一个 GlobalKey
       final key = GlobalKey();
       matchKeys.add(key);
+
       spans.add(WidgetSpan(
-        child: Container(
+        alignment: PlaceholderAlignment.middle,
+        baseline: TextBaseline.ideographic,
+        child: Text(
+          text.substring(match.start, match.end),
           key: key,
-          color: searchMatchTotal == currentIndex ? colorTheme.searchMatchCurrentColor : colorTheme.searchMatchColor,
-          child: Text(
-            text.substring(match.start, match.end),
-            style: TextStyle(color: textColor),
+          style: TextStyle(
+            color: textColor,
+            backgroundColor:
+                searchMatchTotal == currentIndex ? colorTheme.searchMatchCurrentColor : colorTheme.searchMatchColor,
           ),
         ),
       ));

@@ -76,11 +76,11 @@ void main(List<String> args) async {
     await WindowManipulator.initialize();
     // 调整关闭按钮的位置
     WindowManipulator.overrideStandardWindowButtonPosition(
-        buttonType: NSWindowButtonType.closeButton, offset: Offset(10, 16));
+        buttonType: NSWindowButtonType.closeButton, offset: Offset(10, 13));
     WindowManipulator.overrideStandardWindowButtonPosition(
-        buttonType: NSWindowButtonType.miniaturizeButton, offset: const Offset(29, 16));
+        buttonType: NSWindowButtonType.miniaturizeButton, offset: const Offset(29, 13));
     WindowManipulator.overrideStandardWindowButtonPosition(
-        buttonType: NSWindowButtonType.zoomButton, offset: const Offset(48, 16));
+        buttonType: NSWindowButtonType.zoomButton, offset: const Offset(48, 13));
   }
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {

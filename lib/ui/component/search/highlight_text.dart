@@ -5,15 +5,8 @@ class HighlightTextWidget extends StatelessWidget {
   final String text;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
   final SearchTextController searchController;
-  final ScrollController? scrollController;
 
-  const HighlightTextWidget({
-    super.key,
-    required this.text,
-    this.contextMenuBuilder,
-    required this.searchController,
-    this.scrollController,
-  });
+  const HighlightTextWidget({super.key, required this.text, this.contextMenuBuilder, required this.searchController});
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +52,8 @@ class HighlightTextWidget extends StatelessWidget {
       final key = GlobalKey();
       matchKeys.add(key);
       spans.add(WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          baseline: TextBaseline.ideographic,
           child: Container(
         key: key,
         color: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
