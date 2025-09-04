@@ -21,6 +21,7 @@ import 'package:proxypin/network/components/manager/hosts_manager.dart';
 import 'package:proxypin/network/components/manager/request_block_manager.dart';
 import 'package:proxypin/network/components/manager/request_rewrite_manager.dart';
 import 'package:proxypin/storage/histories.dart';
+import 'package:proxypin/ui/component/proxy_port_setting.dart';
 import 'package:proxypin/ui/configuration.dart';
 import 'package:proxypin/ui/mobile/menu/drawer.dart';
 import 'package:proxypin/ui/mobile/setting/hosts.dart';
@@ -35,7 +36,6 @@ import 'package:proxypin/ui/mobile/setting/ssl.dart';
 import 'package:proxypin/ui/mobile/widgets/about.dart';
 
 import '../../component/widgets.dart';
-import '../../desktop/toolbar/setting/setting.dart';
 import '../setting/proxy.dart';
 import '../setting/request_map.dart';
 

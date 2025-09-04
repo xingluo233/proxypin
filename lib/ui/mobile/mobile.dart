@@ -282,24 +282,21 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
 
     String content = isCN
         ? '提示：默认不会开启HTTPS抓包，请安装证书后再开启HTTPS抓包。\n\n'
-            '1. 增加请求映射功能，无需请求远程服务即可返回结果；\n'
-            '2. 请求列表支持图片预览；\n'
-            '3. 增加复制原始请求；\n'
-            '4. 搜索增加区分大小写；\n'
-            '5. 语言本地化新增繁体中文；\n'
-            '6. 优化Android VPN性能；\n'
-            '7. 修复HTTP2 Host；\n'
-            '8. 修复复制Python requests问题；\n'
-        : 'Tips：By default, HTTPS packet capture will not be enabled. Please install the certificate before enabling HTTPS packet capture。\n\n'
-            'Click HTTPS Capture packets(Lock icon)，Choose to install the root certificate and follow the prompts to proceed。\n\n'
-            '1. Added request mapping feature, allowing results to be returned without requesting a remote service;\n'
-            '2. Request list supports image preview;\n'
-            '3. Added copy original request;\n'
-            '4. Search now distinguishes between uppercase and lowercase letters;\n'
-            '5. Added Traditional Chinese localization;\n'
-            '6. Optimized Android VPN performance;\n'
-            '7. Fixed HTTP2 Host issue;\n'
-            '8. Fixed Python requests copy issue.';
+            '1. 消息体增加搜索高亮；\n'
+            '2. 安卓ROOT系统支持自动安装系统证书；\n'
+            '3. Socket自动清理，防止退出时资源占用问题；\n'
+            '4. 调整UI菜单；\n'
+            '5. 修复HTTP2包大小不正确；\n'
+            '6. 修复请求映射Bug；\n'
+            '7. 修复安卓部分闪退情况；\n'
+        : 'Tips: HTTPS packet capture is disabled by default. Please install the certificate before enabling HTTPS packet capture.\n\n'
+            '1. Add search highlight for message body;\n'
+            '2. Android ROOT system supports automatic installation of system certificates;\n'
+            '3. Socket auto cleanup to prevent resource occupation when exiting;\n'
+            '4. Adjust UI menu;\n'
+            '5. Fix incorrect HTTP2 packet size;\n'
+            '6. Fix request map bug;\n'
+            '7. Fix some Android crash issues;\n';
     showAlertDialog(isCN ? '更新内容V${AppConfiguration.version}' : "Update content V${AppConfiguration.version}", content,
         () {
       widget.appConfiguration.upgradeNoticeV20 = false;

@@ -77,7 +77,7 @@ class MapLocaleState extends State<DesktopMapLocal> {
 
   RequestMapItem getRequestMapItem() {
     RequestMapItem item = widget.item ?? RequestMapItem();
-    var headers = _headerKey.currentState?.getHeaders();
+    var headers = _headerKey.currentState?.getHeaders() ?? widget.item?.headers;
     item.statusCode = int.tryParse(statusCodeController.text) ?? 200;
     item.headers = headers;
     item.body = bodyTextController.text;

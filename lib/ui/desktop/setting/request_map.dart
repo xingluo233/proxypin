@@ -12,8 +12,8 @@ import 'package:proxypin/network/components/manager/request_map_manager.dart';
 import 'package:proxypin/ui/component/app_dialog.dart';
 import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/component/widgets.dart';
-import 'package:proxypin/ui/desktop/toolbar/setting/request_map/map_local.dart';
-import 'package:proxypin/ui/desktop/toolbar/setting/request_map/map_scipt.dart';
+import 'package:proxypin/ui/desktop/setting/request_map/map_local.dart';
+import 'package:proxypin/ui/desktop/setting/request_map/map_scipt.dart';
 import 'package:proxypin/utils/lang.dart';
 
 import '../../../../network/util/logger.dart';
