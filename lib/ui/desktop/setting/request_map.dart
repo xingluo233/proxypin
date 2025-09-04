@@ -169,7 +169,8 @@ class _RequestMapPageState extends State<RequestMapPage> {
 
   /// 添加脚本
   Future<void> showEdit() async {
-    showDialog(barrierDismissible: false, context: context, builder: (_) => const RequestMapEdit()).then((value) {
+    showDialog(barrierDismissible: false, context: context, builder: (_) => RequestMapEdit(windowId: widget.windowId))
+        .then((value) {
       if (value != null) {
         setState(() {});
       }
@@ -367,9 +368,11 @@ class _RequestMapListState extends State<RequestMapList> {
     }
 
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => RequestMapEdit(rule: index == null ? null : widget.list[index], item: item)).then((value) {
+            barrierDismissible: false,
+            context: context,
+            builder: (_) =>
+                RequestMapEdit(windowId: widget.windowId, rule: index == null ? null : widget.list[index], item: item))
+        .then((value) {
       if (value != null) {
         setState(() {});
       }

@@ -70,6 +70,9 @@ class MapLocaleState extends State<DesktopMapLocal> {
     statusCodeController.text = item.statusCode?.toString() ?? '200';
     bodyTextController.text = item.body ?? '';
     bodyType.value = item.bodyType ?? ReplaceBodyType.text.name;
+    if (item.bodyType == ReplaceBodyType.file.name) {
+      bodyFile.value = item.bodyFile;
+    }
   }
 
   RequestMapItem getRequestMapItem() {
@@ -78,7 +81,7 @@ class MapLocaleState extends State<DesktopMapLocal> {
     item.statusCode = int.tryParse(statusCodeController.text) ?? 200;
     item.headers = headers;
     item.body = bodyTextController.text;
-    item.bodyType = item.bodyType ?? ReplaceBodyType.text.name;
+    item.bodyType = bodyType.value;
     if (item.bodyType == ReplaceBodyType.file.name) {
       item.bodyFile = bodyFile.value;
     } else {
