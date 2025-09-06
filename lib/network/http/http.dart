@@ -98,7 +98,10 @@ abstract class HttpMessage {
       return 'utf-8';
     }
 
-    MediaType mediaType = MediaType.valueOf(contentType);
+    MediaType? mediaType = MediaType.valueOf(contentType);
+    if (mediaType == null) {
+      return 'utf-8';
+    }
     return mediaType.charset ?? MediaType.defaultCharset(mediaType);
   }
 
