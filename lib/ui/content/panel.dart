@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:flutter_toastr/flutter_toastr.dart';
+import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/bin/server.dart';
 import 'package:proxypin/network/http/http.dart';
-import 'package:proxypin/network/http/websocket.dart';
 import 'package:proxypin/storage/favorites.dart';
-import 'package:proxypin/ui/component/app_dialog.dart';
 import 'package:proxypin/ui/component/share.dart';
 import 'package:proxypin/ui/component/state_component.dart';
 import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/component/widgets.dart';
 import 'package:proxypin/ui/configuration.dart';
+import 'package:proxypin/ui/content/web_socket.dart';
 import 'package:proxypin/ui/mobile/menu/drawer.dart';
 import 'package:proxypin/ui/mobile/request/request_editor.dart';
 import 'package:proxypin/ui/mobile/setting/request_map.dart';
@@ -375,87 +373,6 @@ class Cookies extends StatelessWidget {
     });
 
     return headers;
-  }
-}
-
-///以聊天对话框样式展示websocket消息
-class Websocket extends StatelessWidget {
-  final ValueWrap<HttpRequest> request;
-  final ValueWrap<HttpResponse> response;
-
-  const Websocket(this.request, this.response, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    AppLocalizations localizations = AppLocalizations.of(context)!;
-
-    var request = this.request.get();
-    if (request == null) {
-      return const SizedBox();
-    }
-    List<WebSocketFrame> messages = List.from(request.messages);
-    var response = this.response.get();
-    if (response != null) {
-      messages.addAll(response.messages);
-    }
-    messages.sort((a, b) => a.time.compareTo(b.time));
-
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 15),
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        var message = messages[index];
-        var avatar = SelectionContainer.disabled(
-            child: CircleAvatar(
-                backgroundColor: message.isFromClient ? Colors.green : Colors.blue,
-                child:
-                    Text(message.isFromClient ? 'C' : 'S', style: const TextStyle(fontSize: 18, color: Colors.white))));
-
-        return Padding(
-            padding: const EdgeInsets.only(bottom: 5),
-            child: Row(
-              mainAxisAlignment: message.isFromClient ? MainAxisAlignment.start : MainAxisAlignment.end,
-              children: [
-                if (message.isFromClient) avatar,
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Column(
-                      crossAxisAlignment: message.isFromClient ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                      children: [
-                        SelectionContainer.disabled(
-                            child:
-                                Text(message.time.format(), style: const TextStyle(fontSize: 12, color: Colors.grey))),
-                        Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color:
-                                  message.isFromClient ? Colors.green.withOpacity(0.26) : Colors.blue.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SelectableText(
-                              "${message.payloadDataAsString}${message.isBinary ? ' ${getPackage(message.payloadLength)}' : ''}",
-                              contextMenuBuilder: (context, editableTextState) =>
-                                  contextMenu(context, editableTextState,
-                                      customItem: ContextMenuButtonItem(
-                                        label: localizations.download,
-                                        onPressed: () async {
-                                          String? path = (await FilePicker.platform
-                                              .saveFile(fileName: "websocket.txt", bytes: message.payloadData));
-                                          if (path != null && context.mounted) {
-                                            CustomToast.success(localizations.saveSuccess).show(context);
-                                          }
-                                        },
-                                        type: ContextMenuButtonType.custom,
-                                      )),
-                            ))
-                      ]),
-                ),
-                const SizedBox(width: 8),
-                if (!message.isFromClient) avatar,
-              ],
-            ));
-      },
-    );
   }
 }
 

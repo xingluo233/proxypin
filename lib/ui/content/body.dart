@@ -481,7 +481,7 @@ class _BodyState extends State<_Body> {
       return const Center(child: Text("video not support preview"));
     }
     if (type == ViewType.hex) {
-      return HexViewer(data: Uint8List.fromList(message!.body!));
+      return HexViewer(data: Uint8List.fromList(message!.body!), searchController: widget.searchController);
     }
 
     if (type == ViewType.formUrl) {
@@ -590,15 +590,17 @@ enum ViewType {
 class HexViewer extends StatelessWidget {
   final Uint8List data;
   final int bytesPerRow;
+  final SearchTextController searchController;
 
-  const HexViewer({super.key, required this.data, this.bytesPerRow = 16});
+  const HexViewer({super.key, required this.data, this.bytesPerRow = 16, required this.searchController});
 
   @override
   Widget build(BuildContext context) {
-    return SelectableText(
-      _formatHex(data, bytesPerRow),
-      style: const TextStyle(fontFamily: 'Courier', fontSize: 12),
-    );
+    return HighlightTextWidget(
+        style: const TextStyle(fontFamily: 'Courier', fontSize: 12),
+        text: _formatHex(data, bytesPerRow),
+        searchController: searchController,
+        contextMenuBuilder: contextMenu);
   }
 
   String _formatHex(Uint8List data, int bytesPerRow) {

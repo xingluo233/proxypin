@@ -3,10 +3,12 @@ import 'package:proxypin/ui/component/search/search_controller.dart';
 
 class HighlightTextWidget extends StatelessWidget {
   final String text;
+  final TextStyle? style;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
   final SearchTextController searchController;
 
-  const HighlightTextWidget({super.key, required this.text, this.contextMenuBuilder, required this.searchController});
+  const HighlightTextWidget(
+      {super.key, required this.text, this.contextMenuBuilder, required this.searchController, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class HighlightTextWidget extends StatelessWidget {
 
   List<InlineSpan> _highlightMatches(BuildContext context) {
     if (!searchController.shouldSearch()) {
-      return [TextSpan(text: text)];
+      return [TextSpan(text: text, style: style)];
     }
 
     final pattern = searchController.value.pattern;
@@ -45,7 +47,7 @@ class HighlightTextWidget extends StatelessWidget {
     for (int i = 0; i < allMatches.length; i++) {
       final match = allMatches[i];
       if (match.start > start) {
-        spans.add(TextSpan(text: text.substring(start, match.start)));
+        spans.add(TextSpan(text: text.substring(start, match.start), style: style));
       }
 
       // 为每个高亮项分配一个 GlobalKey
@@ -55,14 +57,14 @@ class HighlightTextWidget extends StatelessWidget {
           alignment: PlaceholderAlignment.middle,
           baseline: TextBaseline.ideographic,
           child: Container(
-        key: key,
-        color: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
-        child: Text(text.substring(match.start, match.end)),
-      )));
+            key: key,
+            color: i == currentIndex ? colorScheme.primary : colorScheme.inversePrimary,
+            child: Text(text.substring(match.start, match.end), style: style),
+          )));
       start = match.end;
     }
     if (start < text.length) {
-      spans.add(TextSpan(text: text.substring(start)));
+      spans.add(TextSpan(text: text.substring(start), style: style));
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -81,7 +83,6 @@ class HighlightTextWidget extends StatelessWidget {
         final key = matchKeys[currentIndex];
         final context = key.currentContext;
         if (context != null) {
-
           Scrollable.ensureVisible(
             context,
             duration: const Duration(milliseconds: 300),

@@ -115,7 +115,7 @@ class _DesktopHomePagePageState extends State<DesktopHomePage> implements EventL
         appBar: Tab(
             child: Container(
           padding: EdgeInsets.only(bottom: 2.5),
-          margin: EdgeInsets.only(bottom: 2.5),
+          margin: EdgeInsets.only(bottom: 5),
           decoration: BoxDecoration(
               // color: Theme.of(context).brightness == Brightness.dark ? null : Color(0xFFF9F9F9),
               border: Border(
