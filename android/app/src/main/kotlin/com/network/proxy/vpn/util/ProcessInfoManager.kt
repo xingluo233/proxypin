@@ -123,8 +123,7 @@ class ProcessInfoManager private constructor() {
         if (networkInfo != null) {
             val processInfo = getProcessInfo(networkInfo.uid)
             if (processInfo != null) {
-                // 返回副本，避免并发修改异常
-                val result = HashMap(processInfo)
+                val result = processInfo.copy()
                 result["remoteHost"] = networkInfo.remoteHost
                 result["remotePort"] = networkInfo.remotePort
                 return result
@@ -155,7 +154,10 @@ class ProcessInfoManager private constructor() {
                         localPort, NetworkInfo(uid, remoteAddress.hostString, remoteAddress.port)
                     )
 
-                    return@withContext processInfo
+                    val result = processInfo.copy()
+                    result["remoteHost"] = remoteAddress.hostString
+                    result["remotePort"] = remoteAddress.port
+                    return@withContext result
                 } else {
                     Log.w("ProcessInfoManager", "No process info found for UID: $uid")
                     null
@@ -182,9 +184,9 @@ class ProcessInfoManager private constructor() {
         var appInfo = appInfoCache.get(uid)
         if (appInfo != null) return appInfo
 
-        val packageManager = activity?.packageManager
+        val packageManager = activity?.packageManager ?: return null
         val pkgNames: Array<String>? = try {
-            packageManager?.getPackagesForUid(uid)
+            packageManager.getPackagesForUid(uid)
         } catch (e: Exception) {
             Log.w("ProcessInfoManager", "getPackagesForUid SecurityException: $uid", e)
             null
@@ -192,10 +194,14 @@ class ProcessInfoManager private constructor() {
         if (pkgNames == null) return null
 
         for (pkgName in pkgNames) {
-            val applicationInfo = packageManager.getApplicationInfo(pkgName, 0)
-            appInfo = ProcessInfo.create(packageManager, applicationInfo)
-            appInfoCache.put(uid, appInfo)
-            return appInfo
+            try {
+                val applicationInfo = packageManager.getApplicationInfo(pkgName, 0)
+                appInfo = ProcessInfo.create(packageManager, applicationInfo)
+                appInfoCache.put(uid, appInfo)
+                return appInfo
+            } catch (e: Exception) {
+                // Ignore packages that can't be found
+            }
         }
         return null
     }

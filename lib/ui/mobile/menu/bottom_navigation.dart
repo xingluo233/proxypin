@@ -52,6 +52,13 @@ class ConfigPage extends StatefulWidget {
 
 class _ConfigPageState extends State<ConfigPage> {
   late ProxyServer proxyServer = widget.proxyServer;
+  late HistoryTask historyTask;
+
+  @override
+  void initState() {
+    super.initState();
+    historyTask = HistoryTask.ensureInstance(proxyServer.configuration, MobileApp.container);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +85,8 @@ class _ConfigPageState extends State<ConfigPage> {
               leading: Icon(Icons.history, color: color),
               title: Text(localizations.history),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => navigator(
-                  context,
-                  MobileHistory(
-                      proxyServer: proxyServer,
-                      container: MobileApp.container,
-                      historyTask: HistoryTask.ensureInstance(proxyServer.configuration, MobileApp.container))),
+              onTap: () => navigator(context,
+                  MobileHistory(proxyServer: proxyServer, container: MobileApp.container, historyTask: historyTask)),
             ),
             const Divider(thickness: 0.35),
             ListTile(
