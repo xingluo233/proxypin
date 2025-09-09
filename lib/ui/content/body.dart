@@ -597,7 +597,7 @@ class HexViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HighlightTextWidget(
-        style: const TextStyle(fontFamily: 'Courier', fontSize: 12),
+        style: const TextStyle(fontFamily: 'Courier', fontSize: 14),
         text: _formatHex(data, bytesPerRow),
         searchController: searchController,
         contextMenuBuilder: contextMenu);
@@ -620,7 +620,7 @@ class HexViewer extends StatelessWidget {
         buffer.write(' ');
       }
 
-      buffer.write(' ');
+      buffer.write('    ');
 
       // ASCII representation
       for (int j = 0; j < bytesPerRow; j++) {

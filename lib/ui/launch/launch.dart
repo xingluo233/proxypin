@@ -99,12 +99,14 @@ class _SocketLaunchState extends State<SocketLaunch> with WindowListener, Widget
     logger.d("appExit");
     await widget.proxyServer.stop();
     started = false;
-    windowManager.setPreventClose(false);
-    await windowManager.destroy();
+    if (Platforms.isDesktop()) {
+      windowManager.setPreventClose(false);
+      await windowManager.destroy();
+    }
 
     try {
-      await SystemNavigator.pop(animated: true).timeout(Duration(milliseconds: 150));
-    } catch (e) {
+      await SystemNavigator.pop(animated: true).timeout(const Duration(milliseconds: 150));
+    } catch (_) {
       //
     }
     exit(0);

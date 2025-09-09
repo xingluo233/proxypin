@@ -171,14 +171,17 @@ class JsonObjectViewerState extends State<JsonObjectViewer> {
   Widget getKeyWidget(MapEntry entry) {
     final keyText = entry.key;
 
-    final keyWidget = SelectableText.rich(
-        showCursor: true,
-        TextSpan(
-            children: _highlightText(keyText, TextStyle(color: widget.colorTheme.propertyKey),
-                searchController: widget.searchController,
-                colorTheme: widget.colorTheme,
-                matchTotalCount: widget.matchTotalCount,
-                matchKeys: widget.matchKeys)));
+    final keyWidget = Container(
+        constraints: BoxConstraints(maxWidth: 350),
+        child: SelectableText.rich(
+            showCursor: true,
+            TextSpan(
+                children: _highlightText(keyText, TextStyle(color: widget.colorTheme.propertyKey),
+                    searchController: widget.searchController,
+                    colorTheme: widget.colorTheme,
+                    matchTotalCount: widget.matchTotalCount,
+                    matchKeys: widget.matchKeys))));
+
     //是否有子层级
     if (_isExtensible(entry.value)) {
       return InkWell(
