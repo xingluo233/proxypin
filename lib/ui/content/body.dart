@@ -481,10 +481,7 @@ class _BodyState extends State<_Body> {
       return const Center(child: Text("video not support preview"));
     }
     if (type == ViewType.hex) {
-      return HighlightTextWidget(
-          text: message!.body!.map(intToHex).join(" "),
-          searchController: widget.searchController,
-          contextMenuBuilder: contextMenu);
+      return HexViewer(data: Uint8List.fromList(message!.body!));
     }
 
     if (type == ViewType.formUrl) {
@@ -587,5 +584,56 @@ enum ViewType {
       }
     }
     return null;
+  }
+}
+
+class HexViewer extends StatelessWidget {
+  final Uint8List data;
+  final int bytesPerRow;
+
+  const HexViewer({super.key, required this.data, this.bytesPerRow = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return SelectableText(
+      _formatHex(data, bytesPerRow),
+      style: const TextStyle(fontFamily: 'Courier', fontSize: 12),
+    );
+  }
+
+  String _formatHex(Uint8List data, int bytesPerRow) {
+    final StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < data.length; i += bytesPerRow) {
+      // Address
+      buffer.write(i.toRadixString(16).padLeft(8, '0'));
+      buffer.write('  ');
+
+      // Hex values
+      for (int j = 0; j < bytesPerRow; j++) {
+        if (i + j < data.length) {
+          buffer.write(data[i + j].toRadixString(16).padLeft(2, '0'));
+        } else {
+          buffer.write('  ');
+        }
+        buffer.write(' ');
+      }
+
+      buffer.write(' ');
+
+      // ASCII representation
+      for (int j = 0; j < bytesPerRow; j++) {
+        if (i + j < data.length) {
+          final byte = data[i + j];
+          if (byte >= 32 && byte <= 126) {
+            buffer.write(String.fromCharCode(byte));
+          } else {
+            buffer.write('.');
+          }
+        }
+      }
+
+      buffer.writeln();
+    }
+    return buffer.toString();
   }
 }

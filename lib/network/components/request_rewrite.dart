@@ -135,7 +135,7 @@ class RequestRewriteInterceptor extends Interceptor {
     }
   }
 
-  _updateRequest(HttpRequest request, RewriteItem item) {
+  Future<void> _updateRequest(HttpRequest request, RewriteItem item) async {
     var paramTypes = [RewriteType.addQueryParam, RewriteType.removeQueryParam, RewriteType.updateQueryParam];
 
     if (paramTypes.contains(item.type)) {
@@ -187,7 +187,7 @@ class RequestRewriteInterceptor extends Interceptor {
       return;
     }
 
-    _updateMessage(request, item);
+    await _updateMessage(request, item);
   }
 
   //修改消息

@@ -304,7 +304,7 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
     });
   }
 
-  showAlertDialog(String title, String content, Function onClose) {
+  void showAlertDialog(String title, String content, Function onClose) {
     showDialog(
         context: context,
         barrierDismissible: false,
