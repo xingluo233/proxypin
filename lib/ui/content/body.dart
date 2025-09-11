@@ -607,8 +607,8 @@ class HexViewer extends StatelessWidget {
     final StringBuffer buffer = StringBuffer();
     for (int i = 0; i < data.length; i += bytesPerRow) {
       // Address
-      buffer.write(i.toRadixString(16).padLeft(8, '0'));
-      buffer.write('  ');
+      // buffer.write(i.toRadixString(16).padLeft(8, '0'));
+      // buffer.write('  ');
 
       // Hex values
       for (int j = 0; j < bytesPerRow; j++) {

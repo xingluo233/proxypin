@@ -141,40 +141,35 @@ class _PreviewDialogState extends State<_PreviewDialog> {
         child: DefaultTabController(
           length: tabs.length,
           initialIndex: tabIndex,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TabBar(
-                tabs: tabs,
-                onTap: (index) {
-                  setState(() {
-                    tabIndex = index;
-                  });
-                },
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    if (isJsonText(widget.bytes))
-                      SingleChildScrollView(padding: const EdgeInsets.all(8.0), child: jsonText()),
-                    if (isJsonText(widget.bytes))
-                      SingleChildScrollView(padding: const EdgeInsets.all(8.0), child: jsonView()),
-                    // TEXT
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(8),
-                      child: SelectableText(safeTextPreview(widget.bytes)),
-                    ),
-
-                    // HEX
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(8),
-                      child: SelectableText(widget.bytes.map(intToHex).join(" ")),
-                    ),
-                  ],
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            TabBar(
+              tabs: tabs,
+              onTap: (index) {
+                setState(() {
+                  tabIndex = index;
+                });
+              },
+            ),
+            Expanded(
+              child: TabBarView(children: [
+                if (isJsonText(widget.bytes))
+                  SingleChildScrollView(padding: const EdgeInsets.all(8.0), child: jsonText()),
+                if (isJsonText(widget.bytes))
+                  SingleChildScrollView(padding: const EdgeInsets.all(8.0), child: jsonView()),
+                // TEXT
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(8),
+                  child: SelectableText(safeTextPreview(widget.bytes)),
                 ),
-              ),
-            ],
-          ),
+
+                // HEX
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(8),
+                  child: SelectableText(widget.bytes.map(intToHex).join(" ")),
+                ),
+              ]),
+            ),
+          ]),
         ),
       ),
       actions: [
