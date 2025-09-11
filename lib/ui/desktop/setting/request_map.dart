@@ -21,12 +21,19 @@ import '../../../../network/util/logger.dart';
 bool _refresh = false;
 
 /// 刷新配置
-void _refreshConfig({bool force = false}) {
-  if (_refresh && !force) {
+Future<void> _refreshConfig({bool force = false}) async {
+  if (force) {
+    _refresh = false;
+    await RequestMapManager.instance.then((manager) => manager.flushConfig());
+    await DesktopMultiWindow.invokeMethod(0, "refreshRequestMap");
+    return;
+  }
+
+  if (_refresh) {
     return;
   }
   _refresh = true;
-  Future.delayed(const Duration(milliseconds: 1500), () async {
+  Future.delayed(const Duration(milliseconds: 1000), () async {
     _refresh = false;
     await RequestMapManager.instance.then((manager) => manager.flushConfig());
     await DesktopMultiWindow.invokeMethod(0, "refreshRequestMap");
@@ -66,6 +73,10 @@ class _RequestMapPageState extends State<RequestMapPage> {
     if ((HardwareKeyboard.instance.isMetaPressed || HardwareKeyboard.instance.isControlPressed) &&
         event.logicalKey == LogicalKeyboardKey.keyW) {
       HardwareKeyboard.instance.removeHandler(onKeyEvent);
+      if (_refresh) {
+        _refreshConfig(force: true).whenComplete(() => WindowController.fromWindowId(widget.windowId!).close());
+        return true;
+      }
       WindowController.fromWindowId(widget.windowId!).close();
       return true;
     }
