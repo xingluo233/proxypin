@@ -21,12 +21,28 @@ class SearchField extends StatefulWidget {
 }
 
 class _SearchFieldState extends State<SearchField> {
+  final FocusNode focusNode = FocusNode();
+  final RxBool caseSensitive = RxBool(false);
+  final RxBool isRegExp = RxBool(false);
+
+  @override
+  initState() {
+    super.initState();
+    if (Platforms.isDesktop()) {
+      focusNode.requestFocus();
+    }
+    caseSensitive.value = widget.searchController.value.isCaseSensitive;
+    isRegExp.value = widget.searchController.value.isRegExp;
+  }
+
+  @override
+  dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isSelected = [
-      widget.searchController.value.isCaseSensitive,
-      widget.searchController.value.isRegExp,
-    ].obs;
     double searchBoxWidth = min(450, MediaQuery.of(context).size.width - 20);
 
     final searchBox = SizedBox(
@@ -38,6 +54,7 @@ class _SearchFieldState extends State<SearchField> {
               width: Platforms.isDesktop() ? 260 : 220,
               child: TextField(
                 autofocus: true,
+                focusNode: focusNode,
                 controller: widget.searchController.patternController,
                 onEditingComplete: () {
                   widget.searchController.moveNext();
@@ -54,14 +71,18 @@ class _SearchFieldState extends State<SearchField> {
                           switch (index) {
                             case 0:
                               widget.searchController.toggleCaseSensitivity();
+                              caseSensitive.value = !caseSensitive.value;
                               break;
                             case 1:
                               widget.searchController.toggleIsRegExp();
+                              isRegExp.value = !isRegExp.value;
                               break;
                           }
-                          isSelected[index] = !isSelected[index];
                         },
-                        isSelected: isSelected,
+                        isSelected: [
+                          caseSensitive.value,
+                          isRegExp.value,
+                        ],
                         children: const [
                           Text('Aa'),
                           Text('.*'),
@@ -70,7 +91,7 @@ class _SearchFieldState extends State<SearchField> {
                     })),
               ),
             ),
-            if (Platforms.isDesktop()) SizedBox(width: 85, child: Obx(() => _getText())),
+            if (Platforms.isDesktop()) SizedBox(width: 85, child: _getText()),
             if (Platforms.isMobile()) SizedBox(width: 10),
             InkWell(
               onTap: widget.searchController.movePrevious,

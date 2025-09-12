@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:proxypin/network/util/logger.dart';
 import 'package:proxypin/ui/component/search/search_field.dart';
 
-class SearchTextController extends ValueNotifier<SearchSettings> {
+class SearchTextController extends ValueNotifier<SearchSettings> with WidgetsBindingObserver {
   SearchTextController() : super(SearchSettings.empty) {
     patternController.addListener(_onPatternControllerChanged);
+    WidgetsBinding.instance.addObserver(this); // 添加监听器
   }
 
   final patternController = TextEditingController();
@@ -76,8 +79,33 @@ class SearchTextController extends ValueNotifier<SearchSettings> {
   }
 
   @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!isSearchOverlayVisible) {
+      return;
+    }
+
+    // 检测键盘弹出并调整位置
+    var view = WidgetsBinding.instance.platformDispatcher.views.first;
+    final bottomInset = MediaQueryData.fromView(view).viewInsets.bottom;
+    if (bottomInset == 0 || overlayTop == null) {
+      // 键盘收起
+      return;
+    }
+
+    var screenHeight = MediaQueryData.fromView(view).size.height;
+    final currentHeight = screenHeight - bottomInset;
+    if (overlayTop! + 50 > currentHeight) {
+      // 如果被键盘遮挡
+      updateOverlayPosition(max(currentHeight - 120, 120), overlayRight!); // 移动到键��上方
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // 移除监听器
     logger.d('Disposing SearchTextController');
+    super.didChangeMetrics();
     removeSearchOverlay();
     patternController.dispose();
     totalMatchCount.close();
@@ -109,7 +137,12 @@ class SearchTextController extends ValueNotifier<SearchSettings> {
         return Positioned(
           top: overlayTop,
           right: overlayRight,
-          child: SearchField(searchController: this),
+          child: Actions(actions: {
+            DismissIntent: CallbackAction<DismissIntent>(onInvoke: (intent) {
+              closeSearch();
+              return null;
+            }),
+          }, child: SearchField(searchController: this)),
         );
       },
     );

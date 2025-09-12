@@ -206,6 +206,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
     var type = widget.httpMessage is HttpRequest ? "Request" : "Response";
 
     bool isImage = widget.httpMessage?.contentType == ContentType.image;
+    VisualDensity visualDensity = Platforms.isMobile() ? VisualDensity.compact : VisualDensity.standard;
 
     var list = [
       Text('$type Body', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
@@ -228,7 +229,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
       isImage
           ? downloadImageButton()
           : IconButton(
-              visualDensity: VisualDensity.comfortable,
+              visualDensity: visualDensity,
               iconSize: 16,
               icon: Icon(Icons.copy),
               tooltip: localizations.copy,
@@ -245,7 +246,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
 
     if (!widget.hideRequestRewrite) {
       list.add(IconButton(
-          visualDensity: VisualDensity.comfortable,
+          visualDensity: visualDensity,
           iconSize: 16,
           icon: const Icon(Icons.edit_document),
           tooltip: localizations.requestRewrite,
@@ -253,7 +254,7 @@ class HttpBodyState extends State<HttpBodyWidget> {
     }
 
     list.add(IconButton(
-        visualDensity: VisualDensity.comfortable,
+        visualDensity: visualDensity,
         iconSize: 20,
         icon: const Icon(Icons.text_format),
         tooltip: localizations.encode,
@@ -265,14 +266,17 @@ class HttpBodyState extends State<HttpBodyWidget> {
         }));
     if (!inNewWindow) {
       list.add(IconButton(
-          visualDensity: VisualDensity.comfortable,
+          visualDensity: visualDensity,
           iconSize: 16,
           icon: const Icon(Icons.open_in_new),
           tooltip: localizations.newWindow,
           onPressed: () => openNew()));
     }
 
-    return Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: list);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: list),
+    );
   }
 
   ///下载图片
