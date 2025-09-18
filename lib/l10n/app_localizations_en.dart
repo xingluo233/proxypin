@@ -978,4 +978,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestMapDescribe => 'Do not request remote services, use local configuration or script for response';
+
+  @override
+  String get automatic => 'Automatic';
+
+  @override
+  String get manual => 'Manual';
 }

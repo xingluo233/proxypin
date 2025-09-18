@@ -17,6 +17,7 @@
 #include <vclibs/vclibs_plugin_c_api.h>
 #include <win32audio/win32audio_plugin_c_api.h>
 #include <window_manager/window_manager_plugin.h>
+#include <x509_cert_store/x509_cert_store_plugin_c_api.h>
 #include <zstandard_windows/zstandard_windows_plugin_c_api.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
@@ -42,6 +43,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("Win32audioPluginCApi"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
+  X509CertStorePluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("X509CertStorePluginCApi"));
   ZstandardWindowsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ZstandardWindowsPluginCApi"));
 }

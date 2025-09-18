@@ -14,6 +14,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   vclibs
   win32audio
   window_manager
+  x509_cert_store
   zstandard_windows
 )
 
