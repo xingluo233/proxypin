@@ -178,6 +178,7 @@ class CertificateManager {
     await keyFile.delete();
     cleanCache();
     _state = StartState.uninitialized;
+    initCAConfig();
   }
 
   static Future<void> initCAConfig() async {
@@ -267,6 +268,7 @@ class CertificateManager {
 
     cleanCache();
     _state = StartState.uninitialized;
+    initCAConfig();
   }
 
   /// 获取证书详细信息
