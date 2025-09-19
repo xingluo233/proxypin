@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:proxypin/network/util/cert/cert_data.dart';
 import 'package:proxypin/network/util/logger.dart';
-import 'package:x509_cert_store/x509_cert_store.dart';
 
 class CertInstaller {
   static Future<bool> installCertificate(File certFile) async {
@@ -17,27 +15,36 @@ class CertInstaller {
           '${Platform.environment['HOME']}/Library/Keychains/login.keychain-db',
           certFile.path,
         ]);
-        logger.d('security add-trusted-cert result: ${result.stdout} ${result.stderr}');
+        logger.d('security add-trusted-cert result: \\${result.stdout} \\${result.stderr}');
         return result.exitCode == 0;
       }
 
-      // Read the certificate file and encode it to Base64
-      final certBytes = await certFile.readAsBytes();
-      final certificateBase64 = base64.encode(certBytes);
+      if (Platform.isWindows) {
+        // Windows: 使用 certutil 命令行安装证书到根证书存储区
+        final result = await Process.run('certutil', [
+          '-addstore',
+          '-user',
+          'Root',
+          certFile.path,
+        ]);
+        logger.d('certutil addstore result: \\${result.stdout} \\${result.stderr}');
+        return result.exitCode == 0;
+      }
 
-      // Initialize the X509CertStore plugin
-      final x509CertStorePlugin = X509CertStore();
+      if (Platform.isLinux) {
+        // Linux: 拷贝到 /usr/local/share/ca-certificates/ 并更新证书
+        final certName = certFile.uri.pathSegments.last.endsWith('.crt')
+            ? certFile.uri.pathSegments.last
+            : '${certFile.uri.pathSegments.last}.crt';
+        final destPath = '/usr/local/share/ca-certificates/$certName';
+        await certFile.copy(destPath);
+        final result = await Process.run('update-ca-certificates', []);
+        logger.d('update-ca-certificates result: \\${result.stdout} \\${result.stderr}');
+        return result.exitCode == 0;
+      }
 
-      // Add the certificate to the trusted root store
-      final result = await x509CertStorePlugin.addCertificate(
-        storeName: X509StoreName.root, // Add to the trusted root store
-        certificateBase64: certificateBase64, // Base64-encoded certificate
-        addType: X509AddType.addNewer, // Replace if it already exists
-        setTrusted: Platform.isMacOS, // Mark the certificate as trusted
-      );
-
-      logger.d('Certificate successfully installed to the trusted root store. Result: \\${result.code} \\${result}');
-      return result.isOk || result.code == X509ErrorCode.alreadyExist.getString();
+      // 其他平台暂不支持
+      return false;
     } catch (e) {
       logger.e('Failed to install certificate: $e');
       return false;
@@ -69,15 +76,19 @@ class CertInstaller {
         }
         return false;
       } else if (Platform.isLinux) {
-        // check common locations
+        // 只检查 /usr/local/share/ca-certificates/ 下是否有对应证书文件
+        final certName = filePath.uri.pathSegments.last.endsWith('.crt')
+            ? filePath.uri.pathSegments.last
+            : '${filePath.uri.pathSegments.last}.crt';
+
         var paths = [
-          '/usr/local/share/ca-certificates/$commonName.crt',
-          '/etc/ssl/certs/$commonName.crt',
+          '/usr/local/share/ca-certificates/$certName',
+          '/etc/ssl/certs/$certName',
         ];
-        for (var p in paths) if (await File(p).exists()) return true;
-        // fallback: search /etc/ssl/certs for subject text
-        var res = await Process.run('grep', ['-i', commonName, '-R', '/etc/ssl/certs']);
-        return (res.stdout as String).isNotEmpty;
+        for (var p in paths) {
+          if (await File(p).exists()) return true;
+        }
+        return false;
       }
     } catch (_) {}
     return false;
