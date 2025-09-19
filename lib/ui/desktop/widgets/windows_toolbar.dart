@@ -39,7 +39,7 @@ class _WindowsToolbarState extends State<WindowsToolbar> with WindowListener {
               width: 32,
             ))),
         widget.title ?? SizedBox(),
-        Expanded(child: DragToMoveArea(child: Container(color: Colors.red))),
+        Expanded(child: DragToMoveArea(child: Container())),
         WindowCaptionButton.minimize(
             brightness: Theme.brightnessOf(context),
             onPressed: () async {
