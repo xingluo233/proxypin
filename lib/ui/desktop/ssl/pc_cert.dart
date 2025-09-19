@@ -17,8 +17,9 @@ class PCCert extends StatefulWidget {
 }
 
 class _PCCertState extends State<PCCert> with TickerProviderStateMixin {
+  static final RxnBool isCertInstalled = RxnBool(null);
+
   late TabController _tabController;
-  final RxnBool isCertInstalled = RxnBool(true);
   X509CertificateData? certDetails;
 
   @override
@@ -37,7 +38,8 @@ class _PCCertState extends State<PCCert> with TickerProviderStateMixin {
 
   void _checkCertStatus() async {
     final details = certDetails ?? await CertificateManager.getCertificateDetails();
-    isCertInstalled.value = await CertInstaller.isCertInstalled(details);
+    final caFile = await CertificateManager.certificateFile();
+    isCertInstalled.value = await CertInstaller.isCertInstalled(caFile, details);
   }
 
   @override
