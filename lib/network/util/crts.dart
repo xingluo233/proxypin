@@ -95,6 +95,14 @@ class CertificateManager {
     return securityContext;
   }
 
+  /// 生成域名证书 PEM（仅证书，不含私钥）
+  static Future<String> generateLeafCertificatePem(String host) async {
+    if (_state != StartState.initialized) {
+      await initCAConfig();
+    }
+    return generate(_caCert!, _serverKeyPair.publicKey as RSAPublicKey, _caPriKey, host);
+  }
+
   /// 生成证书
   static String generate(X509CertificateData caRoot, RSAPublicKey serverPubKey, RSAPrivateKey caPriKey, String host) {
     //根据CA证书subject来动态生成目标服务器证书的issuer和subject

@@ -134,7 +134,7 @@ class DrawerWidget extends StatelessWidget {
 }
 
 ///跳转页面
-navigator(BuildContext context, Widget widget) {
+void navigator(BuildContext context, Widget widget) {
   Navigator.of(context).push(
     MaterialPageRoute(builder: (BuildContext context) {
       return widget;
