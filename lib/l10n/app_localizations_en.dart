@@ -21,9 +21,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolbox => 'Toolbox';
 
   @override
-  String get me => 'Me';
-
-  @override
   String get preference => 'Preferences';
 
   @override
@@ -70,6 +67,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get download => 'Download';
+
+  @override
+  String get config => 'Configuration';
+
+  @override
+  String get version => 'Version';
 
   @override
   String get start => 'Start';
@@ -975,4 +978,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestMapDescribe => 'Do not request remote services, use local configuration or script for response';
+
+  @override
+  String get automatic => 'Automatic';
+
+  @override
+  String get manual => 'Manual';
 }

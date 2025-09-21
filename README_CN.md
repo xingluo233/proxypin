@@ -12,15 +12,29 @@
 * 搜索：根据关键词响应类型多种条件搜索请求
 * 脚本: 支持编写JavaScript脚本来处理请求或响应。
 * 请求重写: 支持重定向，支持替换请求或响应报文，也可以根据增则修改请求或或响应。
+* 请求映射: 不请求远程服务，使用本地配置或脚本进行响应
 * 请求屏蔽: 支持根据URL屏蔽请求，不让请求发送到服务器。
 * 历史记录：自动保存抓包的流量数据，方便回溯查看。支持HAR格式导出与导入。
 * 其他：收藏、工具箱、常用编码工具、以及二维码、正则等
 
 **Mac首次打开会提示不受信任开发者，需要到系统偏好设置-安全性与隐私-允许任何来源。**
 
-国内下载地址： https://gitee.com/wanghongenpin/proxypin/releases
+## 赞助
 
-iOS AppStore下载地址： https://apps.apple.com/app/proxypin/id6450932949      
+如果您觉得ProxyPin对您有帮助，欢迎通过以下方式支持我们，帮助项目长期发展：
+
+* [爱发电赞助](https://afdian.com/a/proxypin)
+* [Buy Me A Coffee](https://buymeacoffee.com/proxypin)
+* 提交反馈和建议，帮助我们改进
+* 为项目贡献代码或文档
+
+**您的支持将用于项目的维护、功能开发和用户体验优化，非常感谢！**    
+
+## 下载地址
+
+国内下载： https://gitee.com/wanghongenpin/proxypin/releases
+
+iOS App Store： https://apps.apple.com/app/proxypin/id6450932949      
 
 Android Google Play：https://play.google.com/store/apps/details?id=com.network.proxy
 

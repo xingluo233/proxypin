@@ -26,19 +26,24 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
   //h2 stream dependency Sequential exec
   SequentialTaskQueue taskQueue = SequentialTaskQueue();
 
-  handle(Decoder decoder, Encoder encoder, ChannelHandler handler) {
+  void handle(Decoder decoder, Encoder encoder, ChannelHandler handler) {
     this.encoder = encoder;
     this.decoder = decoder;
     this.handler = handler;
   }
 
-  channelHandle(Codec codec, ChannelHandler handler) {
+  void channelHandle(Codec codec, ChannelHandler handler) {
     handle(codec, codec, handler);
   }
 
   /// 监听
   void listen(Channel channel, ChannelContext channelContext) {
     buffer.clear();
+    channel.socket.done.onError((error, StackTrace trace) {
+      logger.e('[${channelContext.clientChannel?.id}] secureSocket done error', error: error, stackTrace: trace);
+      channel.dispatcher.exceptionCaught(channelContext, channel, error, trace: trace);
+      return null;
+    });
     channel.socket.listen((data) => channel.dispatcher.channelRead(channelContext, channel, data),
         onError: (error, trace) => channel.dispatcher.exceptionCaught(channelContext, channel, error, trace: trace),
         onDone: () => channel.dispatcher.channelInactive(channelContext, channel));
@@ -50,7 +55,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
   }
 
   ///远程转发请求
-  remoteForward(ChannelContext channelContext, HostAndPort remote) async {
+  Future<void> remoteForward(ChannelContext channelContext, HostAndPort remote) async {
     var clientChannel = channelContext.clientChannel!;
     Channel? remoteChannel =
         channelContext.serverChannel ?? await channelContext.connectServerChannel(remote, RelayHandler(clientChannel));
@@ -130,7 +135,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
 
       var data = decodeResult.data;
       if (data is HttpMessage) {
-        data.packageSize = length;
+        data.packageSize ??= length;
         data.remoteHost = channel.remoteSocketAddress.host;
         data.remotePort = channel.remoteSocketAddress.port;
       }
@@ -178,7 +183,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
   }
 
   /// websocket 处理
-  onWebSocketHandle(ChannelContext channelContext, Channel channel, HttpResponse data) {
+  void onWebSocketHandle(ChannelContext channelContext, Channel channel, HttpResponse data) {
     Channel remoteChannel = channelContext.getAttribute(channel.id);
 
     data.request?.response = data;
@@ -196,7 +201,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
     remoteChannel.dispatcher.channelHandle(rawCodec, WebSocketChannelHandler(channel, data.request!));
   }
 
-  notSupportedForward(ChannelContext channelContext, Channel channel, DecoderResult decodeResult) {
+  void notSupportedForward(ChannelContext channelContext, Channel channel, DecoderResult decodeResult) {
     Channel? remoteChannel = channelContext.getAttribute(channel.id);
     buffer.add(decodeResult.forward ?? []);
     relay(channelContext, channel, remoteChannel!);
@@ -217,6 +222,7 @@ class ChannelDispatcher extends ChannelHandler<Uint8List> {
   @override
   channelInactive(ChannelContext channelContext, Channel channel) async {
     await taskQueue.waitForAll();
+    channel.isOpen = false;
     handler.channelInactive(channelContext, channel);
   }
 }

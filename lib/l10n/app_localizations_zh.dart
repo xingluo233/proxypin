@@ -21,9 +21,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toolbox => '工具箱';
 
   @override
-  String get me => '我的';
-
-  @override
   String get preference => '偏好设置';
 
   @override
@@ -70,6 +67,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get download => '下载';
+
+  @override
+  String get config => '配置';
+
+  @override
+  String get version => '版本';
 
   @override
   String get start => '开始';
@@ -963,6 +966,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get requestMapDescribe => '不请求远程服务，使用本地配置或脚本进行响应';
+
+  @override
+  String get automatic => '自动安装';
+
+  @override
+  String get manual => '手动安装';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -980,9 +989,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get toolbox => '工具箱';
-
-  @override
-  String get me => '我的';
 
   @override
   String get preference => '偏好設定';
@@ -1031,6 +1037,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get download => '下載';
+
+  @override
+  String get config => '設定';
+
+  @override
+  String get version => '版本';
 
   @override
   String get start => '開始';

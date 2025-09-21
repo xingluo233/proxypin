@@ -3,7 +3,6 @@ import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
-import 'package:proxypin/network/components/manager/script_manager.dart';
 
 class DesktopMapScript extends StatefulWidget {
   final String? script;

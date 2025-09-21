@@ -120,12 +120,6 @@ abstract class AppLocalizations {
   /// **'Toolbox'**
   String get toolbox;
 
-  /// No description provided for @me.
-  ///
-  /// In en, this message translates to:
-  /// **'Me'**
-  String get me;
-
   /// No description provided for @preference.
   ///
   /// In en, this message translates to:
@@ -221,6 +215,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download'**
   String get download;
+
+  /// No description provided for @config.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration'**
+  String get config;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
 
   /// No description provided for @start.
   ///
@@ -1973,6 +1979,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do not request remote services, use local configuration or script for response'**
   String get requestMapDescribe;
+
+  /// No description provided for @automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get automatic;
+
+  /// No description provided for @manual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get manual;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

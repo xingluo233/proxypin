@@ -86,7 +86,7 @@ void processHeaders(StringBuffer py, List<String> headers) {
 
 // 处理body
 String? processBody(HttpRequest request) {
-  if (request.body!.isNotEmpty) {
+  if (request.body?.isNotEmpty == true) {
     return 'data = """${escapeCharacter(request.bodyAsString)}"""';
   }
   return null;

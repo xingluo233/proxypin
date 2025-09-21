@@ -15,11 +15,13 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/http/content_type.dart';
 import 'package:proxypin/network/http/http.dart';
-import 'package:proxypin/ui/desktop/request/model/search_model.dart';
 import 'package:proxypin/utils/lang.dart';
+
+import 'model/search_model.dart';
 
 /// @author wanghongen
 /// 2023/8/6
@@ -66,23 +68,32 @@ class SearchConditionsState extends State<SearchConditions> {
   Widget build(BuildContext context) {
     requestContentMap[localizations.all] = null;
     responseContentMap[localizations.all] = null;
-
+    Color primaryColor = ColorScheme.of(context).primary;
     return Container(
         padding: widget.padding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
-              initialValue: searchModel.keyword,
-              onChanged: (val) => searchModel.keyword = val,
-              onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-              decoration: InputDecoration(
-                isCollapsed: true,
-                contentPadding: const EdgeInsets.all(10),
-                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
-                hintText: localizations.keyword,
-              ),
-            ),
+                initialValue: searchModel.keyword,
+                onChanged: (val) => searchModel.keyword = val,
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                decoration: InputDecoration(
+                  isCollapsed: true,
+                  contentPadding: const EdgeInsets.all(10),
+                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+                  hintText: localizations.keyword,
+                  suffixIcon: Obx(() => IconButton(
+                        tooltip: "Case Sensitive",
+                        icon: Text('Aa',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: searchModel.caseSensitive.value ? primaryColor : null)),
+                        onPressed: () {
+                          searchModel.caseSensitive.value = !searchModel.caseSensitive.value;
+                        },
+                      )),
+                )),
             const SizedBox(height: 15),
             Text(localizations.keywordSearchScope),
             const SizedBox(height: 10),
