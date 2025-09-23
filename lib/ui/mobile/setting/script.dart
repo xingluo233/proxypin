@@ -470,91 +470,141 @@ class _ScriptEditState extends State<ScriptEdit> {
         body: Form(
             key: formKey,
             child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               children: [
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: textField("${localizations.name}:", nameController, localizations.pleaseEnter)),
-                const SizedBox(height: 3),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Text("URL(s):"),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline, size: 20),
-                            tooltip: localizations.add,
-                            onPressed: () {
-                              setState(() {
-                                urlControllers.add(TextEditingController());
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      ...List.generate(
-                          urlControllers.length,
-                          (i) => Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
+                // Name section
+                Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: textField("${localizations.name}:", nameController, localizations.pleaseEnter))),
+                const SizedBox(height: 10),
+
+                // URLs section
+                Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Row(children: [
+                            const Text("URL(s):"),
+                            const SizedBox(width: 8),
+                            IconButton(
+                                icon: const Icon(Icons.add_outlined, size: 20),
+                                tooltip: localizations.add,
+                                onPressed: () => setState(() => urlControllers.add(TextEditingController()))),
+                            const Spacer(),
+                            Text("${urlControllers.length}", style: const TextStyle(fontSize: 12, color: Colors.grey))
+                          ]),
+                          const SizedBox(height: 6),
+                          ...List.generate(
+                              urlControllers.length,
+                              (i) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(children: [
+                                    Expanded(
+                                        child: TextFormField(
                                       controller: urlControllers[i],
                                       validator: (val) => val?.isNotEmpty == true ? null : "",
                                       keyboardType: TextInputType.url,
                                       decoration: InputDecoration(
                                         hintText: "github.com/api/*",
+                                        hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
                                         contentPadding: const EdgeInsets.all(10),
                                         errorStyle: const TextStyle(height: 0, fontSize: 0),
                                         focusedBorder: focusedBorder(),
                                         isDense: true,
                                         border: const OutlineInputBorder(),
                                       ),
-                                    ),
-                                  ),
-                                  if (urlControllers.length > 1)
-                                    IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                                      tooltip: localizations.delete,
-                                      onPressed: () {
-                                        setState(() {
-                                          urlControllers[i].dispose();
-                                          urlControllers.removeAt(i);
-                                        });
-                                      },
-                                    ),
-                                ],
-                              )),
-                    ],
-                  ),
-                ),
+                                    )),
+                                    if (urlControllers.length > 1)
+                                      IconButton(
+                                          icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                          tooltip: localizations.delete,
+                                          onPressed: () {
+                                            setState(() {
+                                              urlControllers[i].dispose();
+                                              urlControllers.removeAt(i);
+                                            });
+                                          }),
+                                  ])))
+                        ]))),
                 const SizedBox(height: 10),
-                Row(children: [
-                  SizedBox(width: 10),
-                  Text(
-                    "${localizations.script}:",
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                      tooltip: localizations.copy,
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: script.text));
-                        FlutterToastr.show(localizations.copied, context, position: FlutterToastr.top);
-                      },
-                      icon: Icon(Icons.copy_all_outlined, size: 22))
-                ]),
-                const SizedBox(height: 5),
-                CodeTheme(
-                    data: CodeThemeData(styles: monokaiSublimeTheme),
-                    child: SingleChildScrollView(
-                        child: CodeField(
-                            textStyle: const TextStyle(fontSize: 13),
-                            enableSuggestions: true,
-                            gutterStyle: const GutterStyle(width: 50, margin: 0),
-                            onTapOutside: (event) => FocusScope.of(context).unfocus(),
-                            controller: script)))
+
+                // Script section
+                Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Row(children: [
+                            Text("${localizations.script}:", style: const TextStyle(fontWeight: FontWeight.w500)),
+                            const Spacer(),
+                            Tooltip(
+                                message: localizations.copy,
+                                child: IconButton(
+                                    icon: const Icon(Icons.copy_all_outlined, size: 20),
+                                    onPressed: () {
+                                      Clipboard.setData(ClipboardData(text: script.text));
+                                      FlutterToastr.show(localizations.copied, context, position: FlutterToastr.top);
+                                    })),
+                            Tooltip(
+                                message: 'Paste',
+                                child: IconButton(
+                                    icon: const Icon(Icons.content_paste_go_outlined, size: 20),
+                                    onPressed: () async {
+                                      final data = await Clipboard.getData('text/plain');
+                                      final paste = data?.text;
+                                      if (paste == null || paste.isEmpty) return;
+                                      final sel = script.selection;
+                                      if (sel.isValid) {
+                                        final text = script.text;
+                                        final start = sel.start;
+                                        final end = sel.end;
+                                        final newText = text.replaceRange(start, end, paste);
+                                        script.value = script.value.copyWith(
+                                            text: newText,
+                                            selection: TextSelection.collapsed(offset: start + paste.length));
+                                      } else {
+                                        script.text += paste;
+                                      }
+                                      setState(() {});
+                                    })),
+                            Tooltip(
+                                message: localizations.clear,
+                                child: IconButton(
+                                    icon: const Icon(Icons.delete_sweep_outlined, size: 22),
+                                    onPressed: () {
+                                      script.text = '';
+                                      setState(() {});
+                                    }))
+                          ]),
+                          const SizedBox(height: 6),
+                          CodeTheme(
+                              data: CodeThemeData(styles: monokaiSublimeTheme),
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.shade900,
+                                          border: Border.all(color: Colors.grey.withOpacity(0.2))),
+                                      child: SingleChildScrollView(
+                                          child: CodeField(
+                                              textStyle: const TextStyle(fontSize: 13, color: Colors.white),
+                                              enableSuggestions: true,
+                                              gutterStyle: const GutterStyle(width: 50, margin: 0),
+                                              onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                                              controller: script))))),
+                        ])))
               ],
             )));
   }

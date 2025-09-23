@@ -419,73 +419,145 @@ class _ScriptEditState extends State<ScriptEdit> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              textField("${localizations.name}:", nameController, localizations.pleaseEnter),
-              const SizedBox(height: 3),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Text("URL(s):"),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_outline, size: 20),
-                        tooltip: localizations.add,
-                        onPressed: () {
-                          setState(() {
-                            urlControllers.add(TextEditingController());
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  ...List.generate(
-                      urlControllers.length,
-                      (i) => Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: urlControllers[i],
-                                  validator: (val) => val?.isNotEmpty == true ? null : "",
-                                  keyboardType: TextInputType.url,
-                                  decoration: InputDecoration(
-                                    hintText: "github.com/api/*",
-                                    hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
-                                    contentPadding: const EdgeInsets.all(10),
-                                    errorStyle: const TextStyle(height: 0, fontSize: 0),
-                                    focusedBorder: focusedBorder(),
-                                    isDense: true,
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                ),
-                              ),
-                              if (urlControllers.length > 1)
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                                  tooltip: localizations.delete,
-                                  onPressed: () {
-                                    setState(() {
-                                      urlControllers[i].dispose();
-                                      urlControllers.removeAt(i);
-                                    });
-                                  },
-                                ),
-                            ],
-                          )),
-                ],
-              ),
+              // Name section
+              Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: textField("${localizations.name}:", nameController, localizations.pleaseEnter))),
               const SizedBox(height: 10),
-              Text(
-                "${localizations.script}:",
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                  width: 850,
-                  height: 380,
-                  child: CodeTheme(
-                      data: CodeThemeData(styles: monokaiSublimeTheme),
-                      child: SingleChildScrollView(
-                          child: CodeField(textStyle: const TextStyle(fontSize: 13), controller: script))))
+
+              // URLs section
+              Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          const Text("URL(s):"),
+                          const SizedBox(width: 8),
+                          IconButton(
+                              icon: const Icon(Icons.add_outlined, size: 20),
+                              tooltip: localizations.add,
+                              onPressed: () {
+                                setState(() {
+                                  urlControllers.add(TextEditingController());
+                                });
+                              }),
+                          const Spacer(),
+                          Text("${urlControllers.length}", style: const TextStyle(fontSize: 12, color: Colors.grey))
+                        ]),
+                        const SizedBox(height: 6),
+                        ...List.generate(
+                            urlControllers.length,
+                            (i) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(children: [
+                                  Expanded(
+                                      child: TextFormField(
+                                    controller: urlControllers[i],
+                                    validator: (val) => val?.isNotEmpty == true ? null : "",
+                                    keyboardType: TextInputType.url,
+                                    decoration: InputDecoration(
+                                      hintText: "github.com/api/*",
+                                      hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      contentPadding: const EdgeInsets.all(10),
+                                      errorStyle: const TextStyle(height: 0, fontSize: 0),
+                                      focusedBorder: focusedBorder(),
+                                      isDense: true,
+                                      border: const OutlineInputBorder(),
+                                    ),
+                                  )),
+                                  if (urlControllers.length > 1)
+                                    IconButton(
+                                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                        tooltip: localizations.delete,
+                                        onPressed: () {
+                                          setState(() {
+                                            urlControllers[i].dispose();
+                                            urlControllers.removeAt(i);
+                                          });
+                                        }),
+                                ])))
+                      ]))),
+              const SizedBox(height: 10),
+
+              // Script section
+              Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.4)),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          Text("${localizations.script}:", style: const TextStyle(fontWeight: FontWeight.w500)),
+                          const Spacer(),
+                          Tooltip(
+                              message: localizations.copy,
+                              child: IconButton(
+                                  icon: const Icon(Icons.copy_all_outlined, size: 20),
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: script.text));
+                                    FlutterToastr.show(localizations.copied, context, position: FlutterToastr.top);
+                                  })),
+                          Tooltip(
+                              message: 'Paste',
+                              child: IconButton(
+                                  icon: const Icon(Icons.content_paste_go_outlined, size: 19),
+                                  onPressed: () async {
+                                    final data = await Clipboard.getData('text/plain');
+                                    final paste = data?.text;
+                                    if (paste == null || paste.isEmpty) return;
+                                    final sel = script.selection;
+                                    if (sel.isValid) {
+                                      final text = script.text;
+                                      final start = sel.start;
+                                      final end = sel.end;
+                                      final newText = text.replaceRange(start, end, paste);
+                                      script.value = script.value.copyWith(
+                                          text: newText,
+                                          selection: TextSelection.collapsed(offset: start + paste.length));
+                                    } else {
+                                      script.text += paste;
+                                    }
+                                  })),
+                          Tooltip(
+                              message: localizations.clear,
+                              child: IconButton(
+                                  icon: const Icon(Icons.delete_sweep_outlined, size: 22),
+                                  onPressed: () {
+                                    script.text = '';
+                                  })),
+                          const SizedBox(width: 5)
+                        ]),
+                        const SizedBox(height: 5),
+                        SizedBox(
+                            width: 850,
+                            height: 380,
+                            child: CodeTheme(
+                                data: CodeThemeData(styles: monokaiSublimeTheme),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade900,
+                                            border: Border.all(color: Colors.grey.withOpacity(0.2))),
+                                        child: SingleChildScrollView(
+                                            child: CodeField(
+                                          textStyle: const TextStyle(fontSize: 13, color: Colors.white),
+                                          controller: script,
+                                          gutterStyle: const GutterStyle(width: 50, margin: 0),
+                                          onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                                        ))))))
+                      ])))
             ],
           )),
     );
@@ -655,7 +727,7 @@ class _ScriptListState extends State<ScriptList> {
   }
 
   //点击菜单
-  showMenus(TapDownDetails details, int index) {
+  void showMenus(TapDownDetails details, int index) {
     if (selected.length > 1) {
       showGlobalMenu(details.globalPosition);
       return;
@@ -692,7 +764,7 @@ class _ScriptListState extends State<ScriptList> {
     });
   }
 
-  showEdit([int? index]) async {
+  Future<void> showEdit([int? index]) async {
     String? script = index == null ? null : await (await ScriptManager.instance).getScript(widget.scripts[index]);
     if (!mounted) {
       return;
@@ -710,7 +782,7 @@ class _ScriptListState extends State<ScriptList> {
   }
 
   //导出js
-  export(List<int> indexes) async {
+  Future<void> export(List<int> indexes) async {
     if (indexes.isEmpty) return;
     //文件名称
     String fileName = 'proxypin-scripts.json';
@@ -738,7 +810,7 @@ class _ScriptListState extends State<ScriptList> {
     if (mounted) FlutterToastr.show(localizations.exportSuccess, context);
   }
 
-  enableStatus(bool enable) {
+  void enableStatus(bool enable) {
     for (var idx in selected) {
       widget.scripts[idx].enabled = enable;
     }
