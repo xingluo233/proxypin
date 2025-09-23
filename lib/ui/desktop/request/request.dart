@@ -215,7 +215,7 @@ class _RequestWidgetState extends State<RequestWidget> {
           onClick: (_) async {
             var scriptManager = await ScriptManager.instance;
             var url = widget.request.domainPath;
-            var scriptItem = (scriptManager).list.firstWhereOrNull((it) => it.url == url);
+            var scriptItem = (scriptManager).list.firstWhereOrNull((it) => it.urls.contains(url));
 
             String? script = scriptItem == null ? null : await scriptManager.getScript(scriptItem);
             if (!mounted) return;
