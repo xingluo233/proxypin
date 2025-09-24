@@ -89,79 +89,115 @@ class _MobileSslState extends State<MobileSslWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final borderColor = Theme.of(context).dividerColor.withValues(alpha: 0.13);
+    final dividerColor = Theme.of(context).dividerColor.withValues(alpha: 0.22);
+
+    Widget section(List<Widget> tiles) => Card(
+          color: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(10)),
+          child: Column(children: tiles),
+        );
+
     return Scaffold(
         appBar: AppBar(
           title: Text(localizations.httpsProxy, style: const TextStyle(fontSize: 16)),
           centerTitle: true,
         ),
-        body: ListView(children: [
-          if (Platform.isIOS)
-            (_loading)
-                ? const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()))
+        body: ListView(padding: const EdgeInsets.all(12), children: [
+          // iOS status card if needed
+          if (Platform.isIOS) ...[
+            _loading
+                ? const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
                 : _statusCard(context),
-          SwitchListTile(
-              hoverColor: Colors.transparent,
-              title: Text(localizations.enabledHttps),
-              value: widget.proxyServer.enableSsl,
-              onChanged: (val) {
-                widget.proxyServer.enableSsl = val;
-                if (widget.onEnableChange != null) widget.onEnableChange!(val);
-                changed = true;
-                CertificateManager.cleanCache();
-                setState(() {});
-              }),
-          ListTile(
-              title: Text(localizations.installRootCa),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-              onTap: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Platform.isIOS
-                            ? IosCaInstall(proxyServer: widget.proxyServer)
-                            : const AndroidCaInstall())).whenComplete(() {
-                  if (Platform.isIOS && _trusted != true) _refreshStatus();
-                });
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.exportCA),
-              onTap: () async {
-                var caFile = await CertificateManager.certificateFile();
-                _exportFile("ProxyPinCA.crt", file: caFile);
-              }),
-          ListTile(title: Text(localizations.exportCaP12), onTap: exportP12),
-          ListTile(
-              title: Text(localizations.exportPrivateKey),
-              onTap: () async {
-                var keyFile = await CertificateManager.privateKeyFile();
-                _exportFile("ProxyPinKey.pem", file: keyFile);
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(title: Text(localizations.importCaP12), onTap: importPk12),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.generateCA),
-              onTap: () async {
-                showConfirmDialog(context, title: localizations.generateCA, content: localizations.generateCADescribe,
-                    onConfirm: () async {
-                  await CertificateManager.generateNewRootCA();
-                  if (context.mounted) FlutterToastr.show(localizations.success, context);
-                  if (Platform.isIOS) _refreshStatus();
-                });
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.resetDefaultCA),
-              onTap: () async {
-                showConfirmDialog(context,
-                    title: localizations.resetDefaultCA,
-                    content: localizations.resetDefaultCADescribe, onConfirm: () async {
-                  await CertificateManager.resetDefaultRootCA();
-                  if (context.mounted) FlutterToastr.show(localizations.success, context);
-                  if (Platform.isIOS) _refreshStatus();
-                });
-              }),
+            const SizedBox(height: 12),
+          ],
+          // SSL toggle and install
+          section([
+            SwitchListTile(
+                hoverColor: Colors.transparent,
+                title: Text(localizations.enabledHttps),
+                value: widget.proxyServer.enableSsl,
+                onChanged: (val) {
+                  widget.proxyServer.enableSsl = val;
+                  widget.onEnableChange?.call(val);
+                  CertificateManager.cleanCache();
+                  setState(() { changed = true; });
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.installRootCa),
+                trailing: const Icon(Icons.keyboard_arrow_right),
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              Platform.isIOS
+                                  ? IosCaInstall(proxyServer: widget.proxyServer)
+                                  : const AndroidCaInstall()))
+                    .whenComplete(() {
+                      if (Platform.isIOS && !_trusted) _refreshStatus();
+                    });
+                }),
+          ]),
+          const SizedBox(height: 12),
+          // Export options
+          section([
+            ListTile(
+                title: Text(localizations.exportCA),
+                onTap: () async {
+                  final file = await CertificateManager.certificateFile();
+                  _exportFile("ProxyPinCA.crt", file: file);
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(title: Text(localizations.exportCaP12), onTap: exportP12),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.exportPrivateKey),
+                onTap: () async {
+                  final file = await CertificateManager.privateKeyFile();
+                  _exportFile("ProxyPinKey.pem", file: file);
+                }),
+          ]),
+          const SizedBox(height: 12),
+          // Import and generate/reset
+          section([
+            ListTile(title: Text(localizations.importCaP12), onTap: importPk12),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.generateCA),
+                onTap: () async {
+                  showConfirmDialog(
+                      context,
+                      title: localizations.generateCA,
+                      content: localizations.generateCADescribe,
+                      onConfirm: () async {
+                        await CertificateManager.generateNewRootCA();
+                        if (mounted) FlutterToastr.show(localizations.success, context);
+                        if (Platform.isIOS) _refreshStatus();
+                      });
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.resetDefaultCA),
+                onTap: () async {
+                  showConfirmDialog(
+                      context,
+                      title: localizations.resetDefaultCA,
+                      content: localizations.resetDefaultCADescribe,
+                      onConfirm: () async {
+                        await CertificateManager.resetDefaultRootCA();
+                        if (mounted) FlutterToastr.show(localizations.success, context);
+                        if (Platform.isIOS) _refreshStatus();
+                      });
+                }),
+          ]),
         ]));
   }
 
