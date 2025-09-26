@@ -1991,6 +1991,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manual'**
   String get manual;
+
+  /// No description provided for @openNewWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Open New Window'**
+  String get openNewWindow;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

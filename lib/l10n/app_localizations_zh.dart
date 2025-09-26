@@ -972,6 +972,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get manual => '手动安装';
+
+  @override
+  String get openNewWindow => '新窗口打开';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
