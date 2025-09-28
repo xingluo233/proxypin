@@ -314,5 +314,9 @@
   "appUpdateIgnoreBtnTxt": "忽略",
 
   "requestMap": "請求映射",
-  "requestMapDescribe": "不請求遠端服務，使用本地配置或腳本進行回應"
+  "requestMapDescribe": "不請求遠端服務，使用本地配置或腳本進行回應",
+
+  "automatic": "自動",
+  "manual": "手動",
+  "certNotInstalled": "未安裝憑證"
 }

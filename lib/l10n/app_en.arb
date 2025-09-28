@@ -340,6 +340,6 @@
 
   "automatic": "Automatic",
   "manual": "Manual",
-
+  "certNotInstalled": "Certificate not installed",
   "openNewWindow": "Open New Window"
 }

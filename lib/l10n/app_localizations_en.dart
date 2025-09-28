@@ -986,5 +986,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manual => 'Manual';
 
   @override
+  String get certNotInstalled => 'Certificate not installed';
+
+  @override
   String get openNewWindow => 'Open New Window';
 }

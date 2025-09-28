@@ -1992,6 +1992,12 @@ abstract class AppLocalizations {
   /// **'Manual'**
   String get manual;
 
+  /// No description provided for @certNotInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate not installed'**
+  String get certNotInstalled;
+
   /// No description provided for @openNewWindow.
   ///
   /// In en, this message translates to:
