@@ -47,6 +47,13 @@ class _SearchState extends State<Search> {
       decoration: BoxDecoration(
         color: Theme.of(context).hoverColor,
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          )
+        ],
       ),
       child: TextField(
         cursorHeight: 22,
@@ -92,7 +99,7 @@ class _SearchState extends State<Search> {
     }
     bool isEN = AppLocalizations.of(context)!.localeName == 'en';
     var height = MediaQuery.of(context).size.height;
-    height = isEN ? height - 485 : height - 400;
+    height = isEN ? height - 486 : height - 401;
     showMenu(
         context: context,
         position: RelativeRect.fromLTRB(60, height, 60, height),
