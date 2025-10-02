@@ -196,13 +196,16 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
                 bottomNavigationBar: widget.appConfiguration.bottomNavigation
                     ? Container(
                         constraints: const BoxConstraints(maxHeight: 85),
-                        child: Theme(
+                        // padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                        child: ClipRRect(
+                            // borderRadius: BorderRadius.circular(16),
+                            child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
                           child: BottomNavigationBar(
                             type: BottomNavigationBarType.fixed,
-                            selectedIconTheme: const IconThemeData(size: 26),
-                            unselectedIconTheme: const IconThemeData(size: 26),
+                            iconSize: 23,
                             selectedFontSize: 0,
+                            unselectedFontSize: 0,
                             elevation: 0,
                             items: [
                               BottomNavigationBarItem(
@@ -225,7 +228,7 @@ class MobileHomeState extends State<MobileHomePage> implements EventListener, Li
                             currentIndex: _selectIndex.value,
                             onTap: (index) => _selectIndex.value = index,
                           ),
-                        ))
+                        )))
                     : null)));
   }
 

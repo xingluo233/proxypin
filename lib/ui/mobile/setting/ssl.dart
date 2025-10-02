@@ -17,6 +17,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_toastr/flutter_toastr.dart';
@@ -26,6 +27,8 @@ import 'package:proxypin/network/bin/server.dart';
 import 'package:proxypin/network/util/cert/cert_data.dart';
 import 'package:proxypin/network/util/crts.dart';
 import 'package:proxypin/network/util/logger.dart';
+import 'package:proxypin/storage/local_storage.dart';
+import 'package:proxypin/storage/shared_preference_keys.dart';
 import 'package:proxypin/ui/component/utils.dart';
 import 'package:proxypin/ui/mobile/menu/drawer.dart';
 import 'package:proxypin/utils/lang.dart';
@@ -89,122 +92,104 @@ class _MobileSslState extends State<MobileSslWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final borderColor = Theme.of(context).dividerColor.withValues(alpha: 0.13);
+    final dividerColor = Theme.of(context).dividerColor.withValues(alpha: 0.22);
+
+    Widget section(List<Widget> tiles) => Card(
+          color: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(10)),
+          child: Column(children: tiles),
+        );
+
     return Scaffold(
         appBar: AppBar(
           title: Text(localizations.httpsProxy, style: const TextStyle(fontSize: 16)),
           centerTitle: true,
         ),
-        body: ListView(children: [
+        body: ListView(padding: const EdgeInsets.all(12), children: [
           if (Platform.isIOS)
             (_loading)
                 ? const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()))
-                : _statusCard(context),
-          SwitchListTile(
-              hoverColor: Colors.transparent,
-              title: Text(localizations.enabledHttps),
-              value: widget.proxyServer.enableSsl,
-              onChanged: (val) {
-                widget.proxyServer.enableSsl = val;
-                if (widget.onEnableChange != null) widget.onEnableChange!(val);
-                changed = true;
-                CertificateManager.cleanCache();
-                setState(() {});
-              }),
-          ListTile(
-              title: Text(localizations.installRootCa),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-              onTap: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Platform.isIOS
-                            ? IosCaInstall(proxyServer: widget.proxyServer)
-                            : const AndroidCaInstall())).whenComplete(() {
-                  if (Platform.isIOS && _trusted != true) _refreshStatus();
-                });
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.exportCA),
-              onTap: () async {
-                var caFile = await CertificateManager.certificateFile();
-                _exportFile("ProxyPinCA.crt", file: caFile);
-              }),
-          ListTile(title: Text(localizations.exportCaP12), onTap: exportP12),
-          ListTile(
-              title: Text(localizations.exportPrivateKey),
-              onTap: () async {
-                var keyFile = await CertificateManager.privateKeyFile();
-                _exportFile("ProxyPinKey.pem", file: keyFile);
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(title: Text(localizations.importCaP12), onTap: importPk12),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.generateCA),
-              onTap: () async {
-                showConfirmDialog(context, title: localizations.generateCA, content: localizations.generateCADescribe,
-                    onConfirm: () async {
-                  await CertificateManager.generateNewRootCA();
-                  if (context.mounted) FlutterToastr.show(localizations.success, context);
-                  if (Platform.isIOS) _refreshStatus();
-                });
-              }),
-          const Divider(indent: 0.2, height: 1),
-          ListTile(
-              title: Text(localizations.resetDefaultCA),
-              onTap: () async {
-                showConfirmDialog(context,
-                    title: localizations.resetDefaultCA,
-                    content: localizations.resetDefaultCADescribe, onConfirm: () async {
-                  await CertificateManager.resetDefaultRootCA();
-                  if (context.mounted) FlutterToastr.show(localizations.success, context);
-                  if (Platform.isIOS) _refreshStatus();
-                });
-              }),
-        ]));
-  }
-
-  Widget _statusCard(BuildContext context) {
-    final isCN = Localizations.localeOf(context) == const Locale.fromSubtags(languageCode: 'zh');
-    Color color;
-    IconData icon;
-    String title;
-    String subtitle;
-
-    if (!_installed) {
-      color = Colors.red;
-      icon = Icons.error_outline;
-      title = isCN ? '证书未安装' : 'Certificate Not Installed';
-      subtitle = isCN ? '点击“安装根证书”进行安装' : 'Tap "Install Root CA" to proceed';
-    } else if (!_trusted) {
-      color = Colors.orange;
-      icon = Icons.warning_amber_rounded;
-      title = isCN ? '证书未信任' : 'Certificate Not Trusted';
-      subtitle = localizations.trustCaDescribe;
-    } else {
-      return SizedBox();
-    }
-
-    return Card(
-      margin: const EdgeInsets.all(12),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 6),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(width: 8),
-            Expanded(child: Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: color))),
+                : CertStatusCard(installed: _installed, trusted: _trusted, proxyServer: widget.proxyServer),
+          // SSL toggle and install
+          section([
+            SwitchListTile(
+                hoverColor: Colors.transparent,
+                title: Text(localizations.enabledHttps),
+                value: widget.proxyServer.enableSsl,
+                onChanged: (val) {
+                  widget.proxyServer.enableSsl = val;
+                  widget.onEnableChange?.call(val);
+                  CertificateManager.cleanCache();
+                  setState(() {
+                    changed = true;
+                  });
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.installRootCa),
+                trailing: const Icon(Icons.keyboard_arrow_right),
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => Platform.isIOS
+                              ? IosCaInstall(proxyServer: widget.proxyServer)
+                              : const AndroidCaInstall())).whenComplete(() {
+                    if (Platform.isIOS && !_trusted) _refreshStatus();
+                  });
+                }),
           ]),
-          TextButton(
-              onPressed: () {
-                navigator(context, IosCaInstall(proxyServer: widget.proxyServer));
-              },
-              child: Text(subtitle)),
-        ]),
-      ),
-    );
+          const SizedBox(height: 12),
+          // Export options
+          section([
+            ListTile(
+                title: Text(localizations.exportCA),
+                onTap: () async {
+                  final file = await CertificateManager.certificateFile();
+                  _exportFile("ProxyPinCA.crt", file: file);
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(title: Text(localizations.exportCaP12), onTap: exportP12),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.exportPrivateKey),
+                onTap: () async {
+                  final file = await CertificateManager.privateKeyFile();
+                  _exportFile("ProxyPinKey.pem", file: file);
+                }),
+          ]),
+          const SizedBox(height: 12),
+          // Import and generate/reset
+          section([
+            ListTile(title: Text(localizations.importCaP12), onTap: importPk12),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.generateCA),
+                onTap: () async {
+                  showConfirmDialog(context, title: localizations.generateCA, content: localizations.generateCADescribe,
+                      onConfirm: () async {
+                    await CertificateManager.generateNewRootCA();
+                    if (mounted) FlutterToastr.show(localizations.success, context);
+                    if (Platform.isIOS) _refreshStatus();
+                  });
+                }),
+            Divider(height: 0, thickness: 0.3, color: dividerColor),
+            ListTile(
+                title: Text(localizations.resetDefaultCA),
+                onTap: () async {
+                  showConfirmDialog(context,
+                      title: localizations.resetDefaultCA,
+                      content: localizations.resetDefaultCADescribe, onConfirm: () async {
+                    await CertificateManager.resetDefaultRootCA();
+                    if (mounted) FlutterToastr.show(localizations.success, context);
+                    if (Platform.isIOS) _refreshStatus();
+                  });
+                }),
+          ]),
+        ]));
   }
 
   void importPk12() async {
@@ -493,6 +478,118 @@ Future<bool> evaluateChainTrusted(String caPem) async {
   return await NativeMethod.evaluateChainTrusted(leafPem, caPem, host: host);
 }
 
+class IOSCertChecker {
+  static bool checked = false;
+
+  static void check(BuildContext context) async {
+    if (checked || !Platform.isIOS) {
+      return;
+    }
+    logger.d("[IosCertChecker] checking iOS CA status");
+    checked = true;
+
+    if (ProxyServer.current?.enableSsl != true) {
+      return;
+    }
+    if ((await LocalStorage.getBool(SharedPreferenceKeys.CERT_INSTALL_SKIP)) == true) {
+      return;
+    }
+    final caPem = await CertificateManager.certificatePem();
+    bool installed = await NativeMethod.isCaInstalled(caPem);
+    bool trusted = false;
+    if (installed) {
+      trusted = await evaluateChainTrusted(caPem);
+    }
+
+    if ((!installed || !trusted) && context.mounted) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            final localizations = AppLocalizations.of(context)!;
+            return AlertDialog(
+              titlePadding: EdgeInsets.zero,
+              contentPadding: EdgeInsets.zero,
+              constraints: const BoxConstraints(maxHeight: 185),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              content: CertStatusCard(
+                  installed: installed, trusted: trusted, margin: EdgeInsets.zero, proxyServer: ProxyServer.current!),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    LocalStorage.setBool(SharedPreferenceKeys.CERT_INSTALL_SKIP, true);
+                    Navigator.pop(context);
+                  },
+                  child: Text(localizations.appUpdateIgnoreBtnTxt),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(localizations.cancel),
+                ),
+              ],
+            );
+          });
+    }
+  }
+}
+
+class CertStatusCard extends StatelessWidget {
+  final bool installed;
+  final bool trusted;
+  final ProxyServer proxyServer;
+  final EdgeInsetsGeometry? margin;
+
+  const CertStatusCard({
+    super.key,
+    required this.installed,
+    required this.trusted,
+    required this.proxyServer,
+    this.margin = const EdgeInsets.all(12),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isCN = Localizations.localeOf(context) == const Locale.fromSubtags(languageCode: 'zh');
+    Color color;
+    IconData icon;
+    String title;
+    String subtitle;
+
+    if (!installed) {
+      color = Colors.red;
+      icon = Icons.error_outline;
+      title = isCN ? '证书未安装' : 'Certificate Not Installed';
+      subtitle = isCN ? '点击“安装根证书”进行安装' : 'Tap "Install Root CA" to proceed';
+    } else if (!trusted) {
+      color = Colors.orange;
+      icon = Icons.warning_amber_rounded;
+      title = isCN ? '证书未信任' : 'Certificate Not Trusted';
+      subtitle = AppLocalizations.of(context)!.trustCaDescribe;
+    } else {
+      return SizedBox();
+    }
+
+    return Card(
+      margin: margin,
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 6),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: color))),
+          ]),
+          TextButton(
+              onPressed: () {
+                navigator(context, IosCaInstall(proxyServer: proxyServer));
+              },
+              child: Text(subtitle)),
+        ]),
+      ),
+    );
+  }
+}
+
 class IosCaInstall extends StatefulWidget {
   final ProxyServer proxyServer;
 
@@ -652,7 +749,7 @@ class _IosCaInstallState extends State<IosCaInstall> {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(k, style: ks),
       const Spacer(),
-      Flexible(
+      Expanded(
           child: SelectableText(
         v,
         style: vs,

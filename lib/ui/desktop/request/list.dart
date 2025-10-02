@@ -149,31 +149,31 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
   }
 
   ///添加请求
-  add(Channel channel, HttpRequest request) {
+  void add(Channel channel, HttpRequest request) {
     container.add(request);
     domainListKey.currentState?.add(channel, request);
     requestSequenceKey.currentState?.add(request);
   }
 
   ///添加响应
-  addResponse(ChannelContext channelContext, HttpResponse response) {
+  void addResponse(ChannelContext channelContext, HttpResponse response) {
     domainListKey.currentState?.addResponse(channelContext, response);
     requestSequenceKey.currentState?.addResponse(response);
   }
 
   ///移除
-  domainListRemove(List<HttpRequest> list) {
+  void domainListRemove(List<HttpRequest> list) {
     container.removeWhere((element) => list.contains(element));
     requestSequenceKey.currentState?.remove(list);
   }
 
   ///全部请求删除
-  sequenceRemove(List<HttpRequest> list) {
+  void sequenceRemove(List<HttpRequest> list) {
     container.removeWhere((element) => list.contains(element));
     domainListKey.currentState?.remove(list);
   }
 
-  search(SearchModel searchModel) {
+  void search(SearchModel searchModel) {
     domainListKey.currentState?.search(searchModel);
     requestSequenceKey.currentState?.search(searchModel);
   }
@@ -183,7 +183,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
   }
 
   ///清理
-  clean() {
+  void clean() {
     setState(() {
       container.clear();
       domainListKey.currentState?.clean();
@@ -192,7 +192,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
     });
   }
 
-  cleanupEarlyData(int retain) {
+  void cleanupEarlyData(int retain) {
     var list = container.source;
     if (list.length <= retain) {
       return;

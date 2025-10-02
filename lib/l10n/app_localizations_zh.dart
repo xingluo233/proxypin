@@ -972,6 +972,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get manual => '手动安装';
+
+  @override
+  String get certNotInstalled => '证书未安装';
+
+  @override
+  String get openNewWindow => '新窗口打开';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1937,4 +1943,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get requestMapDescribe => '不請求遠端服務，使用本地配置或腳本進行回應';
+
+  @override
+  String get automatic => '自動';
+
+  @override
+  String get manual => '手動';
+
+  @override
+  String get certNotInstalled => '未安裝憑證';
 }
