@@ -341,5 +341,10 @@
   "automatic": "Automatic",
   "manual": "Manual",
   "certNotInstalled": "Certificate not installed",
-  "openNewWindow": "Open New Window"
+  "openNewWindow": "Open New Window",
+  "sponsorDonate": "Sponsor / Donate",
+  "sponsorSupport": "Support ongoing development",
+  "sponsorThanks": "Thank you for supporting this open-source project by choosing any of the following methods to help its long-term development.",
+  "sponsorAfdian": "AFDIAN",
+  "sponsorBuyMeCoffee": "Buy Me a Coffee"
 }

@@ -990,4 +990,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openNewWindow => 'Open New Window';
+
+  @override
+  String get sponsorDonate => 'Sponsor / Donate';
+
+  @override
+  String get sponsorSupport => 'Support ongoing development';
+
+  @override
+  String get sponsorThanks =>
+      'Thank you for supporting this open-source project by choosing any of the following methods to help its long-term development.';
+
+  @override
+  String get sponsorAfdian => 'AFDIAN';
+
+  @override
+  String get sponsorBuyMeCoffee => 'Buy Me a Coffee';
 }

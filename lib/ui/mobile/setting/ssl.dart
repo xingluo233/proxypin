@@ -509,10 +509,14 @@ class IOSCertChecker {
             return AlertDialog(
               titlePadding: EdgeInsets.zero,
               contentPadding: EdgeInsets.zero,
-              constraints: const BoxConstraints(maxHeight: 185),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              content: CertStatusCard(
-                  installed: installed, trusted: trusted, margin: EdgeInsets.zero, proxyServer: ProxyServer.current!),
+              content: Container(
+                  constraints: const BoxConstraints(maxHeight: 185),
+                  child: CertStatusCard(
+                      installed: installed,
+                      trusted: trusted,
+                      margin: EdgeInsets.zero,
+                      proxyServer: ProxyServer.current!)),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
