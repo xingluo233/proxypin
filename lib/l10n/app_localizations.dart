@@ -2003,6 +2003,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open New Window'**
   String get openNewWindow;
+
+  /// No description provided for @sponsorDonate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsor / Donate'**
+  String get sponsorDonate;
+
+  /// No description provided for @sponsorSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support ongoing development'**
+  String get sponsorSupport;
+
+  /// No description provided for @sponsorThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for supporting this open-source project by choosing any of the following methods to help its long-term development.'**
+  String get sponsorThanks;
+
+  /// No description provided for @sponsorAfdian.
+  ///
+  /// In en, this message translates to:
+  /// **'AFDIAN'**
+  String get sponsorAfdian;
+
+  /// No description provided for @sponsorBuyMeCoffee.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Me a Coffee'**
+  String get sponsorBuyMeCoffee;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

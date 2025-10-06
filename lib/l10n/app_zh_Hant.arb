@@ -318,5 +318,11 @@
 
   "automatic": "自動",
   "manual": "手動",
-  "certNotInstalled": "未安裝憑證"
+  "certNotInstalled": "未安裝憑證",
+  "openNewWindow": "新視窗開啟",
+  "sponsorDonate": "贊助 / 捐贈",
+  "sponsorSupport": "支持項目持續開發",
+  "sponsorThanks": "感謝支持開源項目，可選擇以下任意方式，幫助項目長期發展",
+  "sponsorAfdian": "愛發電贊助",
+  "sponsorBuyMeCoffee": "Buy Me a Coffee"
 }

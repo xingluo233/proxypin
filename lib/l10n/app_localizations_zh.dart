@@ -978,6 +978,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get openNewWindow => '新窗口打开';
+
+  @override
+  String get sponsorDonate => '赞助 / 捐赠';
+
+  @override
+  String get sponsorSupport => '支持项目持续开发';
+
+  @override
+  String get sponsorThanks => '感谢支持开源项目，可选择以下任意方式，帮助项目长期发展';
+
+  @override
+  String get sponsorAfdian => '爱发电赞助';
+
+  @override
+  String get sponsorBuyMeCoffee => 'Buy Me a Coffee';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1952,4 +1967,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get certNotInstalled => '未安裝憑證';
+
+  @override
+  String get openNewWindow => '新視窗開啟';
+
+  @override
+  String get sponsorDonate => '贊助 / 捐贈';
+
+  @override
+  String get sponsorSupport => '支持項目持續開發';
+
+  @override
+  String get sponsorThanks => '感謝支持開源項目，可選擇以下任意方式，幫助項目長期發展';
+
+  @override
+  String get sponsorAfdian => '愛發電贊助';
+
+  @override
+  String get sponsorBuyMeCoffee => 'Buy Me a Coffee';
 }
