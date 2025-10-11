@@ -504,6 +504,12 @@ abstract class AppLocalizations {
   /// **'Status code'**
   String get statusCode;
 
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
   /// No description provided for @done.
   ///
   /// In en, this message translates to:

@@ -68,6 +68,8 @@
   "request": "請求",
   "response": "回應",
   "statusCode": "狀態碼",
+  "duration": "耗時",
+
   "done": "完成",
   "type": "類型",
   "enable": "啟用",

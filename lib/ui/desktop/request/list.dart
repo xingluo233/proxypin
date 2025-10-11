@@ -53,6 +53,7 @@ class DesktopRequestListWidget extends StatefulWidget {
 class DesktopRequestListState extends State<DesktopRequestListWidget> with AutomaticKeepAliveClientMixin {
   final GlobalKey<RequestSequenceState> requestSequenceKey = GlobalKey<RequestSequenceState>();
   final GlobalKey<DomainWidgetState> domainListKey = GlobalKey<DomainWidgetState>();
+  final GlobalKey<SearchState> searchKey = GlobalKey<SearchState>();
 
   //请求列表容器
   ListenableList<HttpRequest> container = ListenableList();
@@ -95,7 +96,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
               automaticallyImplyLeading: false,
               actions: [popupMenus()],
             ),
-            bottomNavigationBar: Search(onSearch: search),
+            bottomNavigationBar: Search(key: searchKey, onSearch: search),
             body: Padding(
                 padding: const EdgeInsets.only(right: 5),
                 child: TabBarView(physics: const NeverScrollableScrollPhysics(), children: [
@@ -119,6 +120,13 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
         icon: const Icon(Icons.more_vert_outlined, size: 20),
         itemBuilder: (BuildContext context) {
           return <PopupMenuEntry>[
+            CustomPopupMenuItem(
+                height: 35,
+                onTap: () =>  searchKey.currentState?.searchDialog(),
+                child: IconText(
+                    icon: const Icon(Icons.search, size: 17),
+                    text: localizations.search,
+                    textStyle: const TextStyle(fontSize: 13))),
             CustomPopupMenuItem(
                 height: 35,
                 onTap: () => export('ProxyPin_${DateTime.now().dateFormat()}.har'),
@@ -205,7 +213,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
   }
 
   ///导出
-  export(String fileName) async {
+  Future<void> export(String fileName) async {
     var path = await FilePicker.platform.saveFile(fileName: fileName);
     if (path == null) {
       return;

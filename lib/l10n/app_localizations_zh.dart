@@ -213,6 +213,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusCode => '状态码';
 
   @override
+  String get duration => '耗时';
+
+  @override
   String get done => '完成';
 
   @override
@@ -1202,6 +1205,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get statusCode => '狀態碼';
+
+  @override
+  String get duration => '耗時';
 
   @override
   String get done => '完成';

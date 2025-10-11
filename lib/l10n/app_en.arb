@@ -70,6 +70,7 @@
   "request": "Request",
   "response": "Response",
   "statusCode": "Status code",
+  "duration": "Duration",
 
   "done": "Done",
   "type": "Type",

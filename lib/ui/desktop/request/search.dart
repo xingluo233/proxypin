@@ -29,11 +29,11 @@ class Search extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _SearchState();
+    return SearchState();
   }
 }
 
-class _SearchState extends State<Search> {
+class SearchState extends State<Search> {
   SearchModel searchModel = SearchModel();
   bool searched = false;
   TextEditingController keywordController = TextEditingController();
@@ -93,16 +93,16 @@ class _SearchState extends State<Search> {
     );
   }
 
-  void searchDialog(TapDownDetails details) {
+  void searchDialog([TapDownDetails? details]) {
     if (!searched) {
       searchModel.searchOptions = {Option.url};
     }
     bool isEN = AppLocalizations.of(context)!.localeName == 'en';
     var height = MediaQuery.of(context).size.height;
-    height = isEN ? height - 486 : height - 401;
+    height = isEN ? height - 501 : height - 468;
     showMenu(
         context: context,
-        position: RelativeRect.fromLTRB(60, height, 60, height),
+        position: RelativeRect.fromLTRB(65, height, 65, height),
         constraints: const BoxConstraints(minWidth: 260, maxWidth: 330),
         items: [
           PopupMenuItem(

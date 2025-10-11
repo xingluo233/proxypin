@@ -213,6 +213,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusCode => 'Status code';
 
   @override
+  String get duration => 'Duration';
+
+  @override
   String get done => 'Done';
 
   @override
