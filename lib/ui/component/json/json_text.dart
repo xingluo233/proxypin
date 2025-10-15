@@ -17,9 +17,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:proxypin/network/util/logger.dart';
 import 'package:proxypin/ui/component/json/theme.dart';
 import 'package:proxypin/ui/component/search/search_controller.dart';
+import 'package:proxypin/utils/font.dart';
 
 import '../../../utils/platform.dart';
 
@@ -81,17 +81,75 @@ class _JsonTextState extends State<JsonText> {
       // 自动滚动到当前高亮项
       scrollToMatch(jsonParser);
     });
-    if (textList.length < 1500) {
+    if (textList.length < 500) {
       return SelectableText.rich(TextSpan(children: textList), showCursor: true);
     } else {
+      // 分块渲染，避免一次性渲染过多导致卡顿
+      var chunks = splitTextSpans(textList, 400);
       return SizedBox(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height - 160,
-          child: SingleChildScrollView(
-              physics: Platforms.isDesktop() ? null : const BouncingScrollPhysics(),
-              controller: Platforms.isDesktop() ? null : trackingScroll(),
-              child: SelectableText.rich(TextSpan(children: textList), showCursor: true)));
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height - 160,
+        child: SelectionArea(
+          child: ListView.builder(
+            physics: Platforms.isDesktop() ? null : const BouncingScrollPhysics(),
+            controller: Platforms.isDesktop() ? null : trackingScroll(),
+            itemCount: chunks.length,
+            cacheExtent: 1500,
+
+            itemBuilder: (BuildContext context, int index) {
+              // 合并每块为一个 TextSpan，避免多余空行
+              return Text.rich(TextSpan(children: chunks[index]),
+                  textHeightBehavior:
+                      const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
+                  strutStyle: const StrutStyle(
+                    forceStrutHeight: true,
+                    height: 1.393,
+                  ),
+                  style: TextStyle(fontFamily: fonts.regular));
+            },
+          ),
+        ),
+      );
     }
+  }
+
+  // 优化分块：避免因为 Text 组件分隔导致额外空行
+  List<List<TextSpan>> splitTextSpans(List<TextSpan> spans, int chunkSize) {
+    if (spans.length <= chunkSize) {
+      return [spans];
+    }
+
+    List<List<TextSpan>> chunks = [];
+
+    bool endsWithNewline(TextSpan s) => s.text != null && s.text!.endsWith('\n');
+    bool startsWithNewline(TextSpan s) => s.text != null && s.text!.startsWith('\n');
+
+    for (int i = 0; i < spans.length; i += chunkSize) {
+      final chunk = spans.sublist(i, (i + chunkSize < spans.length) ? i + chunkSize : spans.length);
+
+      if (chunk.isEmpty) continue;
+
+      if (i > 0) {
+        // 对非首块：去掉首 span 的一个前导换行抵消组件分隔换行
+        final first = chunk.first;
+        if (startsWithNewline(first)) {
+          final newText = first.text!.substring(1);
+          chunk[0] = TextSpan(text: newText, style: first.style, children: first.children);
+        }
+      }
+
+      if (chunk.length > 1 && endsWithNewline(chunk.last)) {
+        // 除最后一块外，块尾不保留以 \n 结尾的 span（把它挪到下一块）
+        final last = chunk.last;
+        final newText = last.text!.substring(0, last.text!.length - 1);
+        chunk[chunk.length - 1] = TextSpan(text: newText, style: last.style, children: last.children);
+      }
+
+      chunks.add(chunk);
+    }
+
+    // 末尾块不需要特殊处理
+    return chunks;
   }
 
   void scrollToMatch(JsonParser jsonParser) {
@@ -176,7 +234,7 @@ class JsonParser {
       textList.addAll(getArrayText(json));
     } else {
       textList.add(TextSpan(text: json == null ? '' : json.toString()));
-      textList.add(TextSpan(text: '\n'));
+      textList.add(const TextSpan(text: '\n'));
     }
     return textList;
   }
@@ -197,7 +255,7 @@ class JsonParser {
         getBasicValue(entry.value, postfix),
       ]);
       result.add(textSpan);
-      result.add(TextSpan(text: '\n'));
+      result.add(const TextSpan(text: '\n'));
 
       if (entry.value is Map<String, dynamic>) {
         result.addAll(getMapText(entry.value, openPrefix: prefix, prefix: '$prefix$indent', suffix: postfix));
@@ -220,7 +278,7 @@ class JsonParser {
       String postfix = i == list.length - 1 ? '' : ',';
 
       result.add(getBasicValue(value, postfix, prefix: prefix));
-      result.add(TextSpan(text: '\n'));
+      result.add(const TextSpan(text: '\n'));
 
       if (value is Map<String, dynamic>) {
         result.addAll(getMapText(value, openPrefix: '$openPrefix ', prefix: '$prefix$indent', suffix: postfix));
