@@ -84,7 +84,7 @@ class _JsonTextState extends State<JsonText> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       searchController?.updateMatchCount(jsonParser.searchMatchTotal);
       // 自动滚动到当前高亮项
-      scrollToMatch(jsonParser);
+      scrollToMatch(jsonParser, chunks);
     });
 
     if (textList.length < 1000) {
@@ -97,6 +97,7 @@ class _JsonTextState extends State<JsonText> {
           child: SelectionArea(
               child: ScrollablePositionedList.builder(
             physics: Platforms.isDesktop() ? null : const BouncingScrollPhysics(),
+            scrollController: Platforms.isDesktop() ? null : trackingScroll(),
             itemCount: chunks.length,
             minCacheExtent: 1500,
             itemScrollController: itemScrollController,
@@ -233,8 +234,8 @@ class _JsonTextState extends State<JsonText> {
     trackingScroll.addListener(() {
       // iOS 回弹或向上轻微滑动时，驱动外部滚动条联动
       if (trackingScroll.offset < -10 || (trackingScroll.offset < 30 && trackingScroll.offset < prevOffset)) {
-        if (scrollController != null && scrollController.offset >= 0) {
-          scrollController.jumpTo(scrollController.offset - max((prevOffset - trackingScroll.offset), 15));
+        if (scrollController != null && scrollController.offset >= 50) {
+          scrollController.jumpTo(scrollController.offset - max((prevOffset - trackingScroll.offset), 10));
         }
       }
       prevOffset = trackingScroll.offset;
