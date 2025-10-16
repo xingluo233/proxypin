@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:proxypin/network/http/content_type.dart';
@@ -100,6 +102,9 @@ class SearchState extends State<Search> {
     bool isEN = AppLocalizations.of(context)!.localeName == 'en';
     var height = MediaQuery.of(context).size.height;
     height = isEN ? height - 501 : height - 468;
+    if (Platform.isMacOS) {
+      height -= 30;
+    }
     showMenu(
         context: context,
         position: RelativeRect.fromLTRB(65, height, 65, height),
