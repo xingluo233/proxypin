@@ -1,7 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:proxypin/l10n/app_localizations.dart';
 import 'package:flutter_qr_reader_plus/flutter_qr_reader.dart';
-import 'package:image_pickers/image_pickers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:proxypin/network/util/logger.dart';
 
@@ -189,12 +189,15 @@ class _QrReaderViewState extends State<QeCodeScanView> with TickerProviderStateM
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     IconButton(
-                      onPressed: () {
-                        ImagePickers.pickerPaths(showCamera: true).then((value) {
-                          if (value.isNotEmpty) {
-                            scanImage(value[0].path!);
-                          }
-                        });
+                      onPressed: () async {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.image,
+                          allowMultiple: false,
+                        );
+                        if (result == null || result.files.isEmpty) return;
+                        final path = result.files.first.path;
+                        if (path == null) return;
+                        scanImage(path);
                       },
                       icon: Icon(Icons.photo_library, color: Colors.white, size: 35),
                     ),

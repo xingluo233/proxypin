@@ -2,7 +2,7 @@ name: proxypin
 description: ProxyPin
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.2.2+23
+version: 1.2.2+25
 
 environment:
   sdk: '>=3.0.2 <4.0.0'
@@ -36,7 +36,6 @@ dependencies:
   flutter_desktop_context_menu: ^0.2.0
   device_info_plus: ^11.5.0
   shared_preferences: ^2.5.3
-  image_pickers: ^2.0.6
   url_launcher: ^6.3.2
   toastification: ^3.0.2
   get: ^4.7.2
