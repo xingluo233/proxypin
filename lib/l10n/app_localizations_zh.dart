@@ -317,6 +317,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newBuilt => '新建';
 
   @override
+  String get reportServers => '上报服务器';
+
+  @override
+  String get addReportServer => '新增上报服务器';
+
+  @override
+  String get editReportServer => '编辑上报服务器';
+
+  @override
+  String get serverUrl => '服务器 URL';
+
+  @override
+  String get compression => '压缩';
+
+  @override
+  String get compressionNone => '无';
+
+  @override
   String get newFolder => '新建文件夹';
 
   @override
@@ -1309,6 +1327,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get newBuilt => '新建';
+
+  @override
+  String get reportServers => '上報伺服器';
+
+  @override
+  String get addReportServer => '新增上報伺服器';
+
+  @override
+  String get editReportServer => '編輯上報伺服器';
+
+  @override
+  String get serverUrl => '伺服器 URL';
+
+  @override
+  String get compression => '壓縮';
+
+  @override
+  String get compressionNone => '無';
 
   @override
   String get newFolder => '新建資料夾';

@@ -96,9 +96,6 @@ class ReportServer {
   /// 压缩方式：none/gzip，默认 none
   final String? compression;
 
-  /// 额外请求头（可选）
-  final Map<String, String>? headers;
-
   RegExp _urlReg;
 
   ReportServer({
@@ -107,7 +104,6 @@ class ReportServer {
     required this.serverUrl,
     this.enabled = true,
     this.compression,
-    this.headers,
   }) : _urlReg = RegExp(matchUrl.replaceAll("*", ".*").replaceFirst('?', '\\?'));
 
   bool match(String url) {
@@ -136,19 +132,16 @@ class ReportServer {
       serverUrl: serverUrl ?? this.serverUrl,
       enabled: enabled ?? this.enabled,
       compression: compression ?? this.compression,
-      headers: headers ?? this.headers,
     );
   }
 
   factory ReportServer.fromJson(Map<String, dynamic> json) {
-    final headers = json['headers'];
     return ReportServer(
       name: json['name'] ?? '',
       matchUrl: json['matchUrl'] ?? '',
       serverUrl: json['serverUrl'] ?? '',
       enabled: json['enabled'] ?? true,
       compression: (json['compression'] ?? 'none') as String,
-      headers: headers == null ? null : Map<String, String>.from(headers as Map),
     );
   }
 

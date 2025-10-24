@@ -443,7 +443,7 @@ class RequestPageState extends State<RequestPage> {
   }
 
   /// 检查远程连接
-  checkConnectTask(BuildContext context) async {
+  Future<void> checkConnectTask(BuildContext context) async {
     int retry = 0;
     Timer.periodic(const Duration(milliseconds: 15000), (timer) async {
       if (remoteDevice.value.connect == false) {

@@ -317,6 +317,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newBuilt => 'New';
 
   @override
+  String get reportServers => 'Report Servers';
+
+  @override
+  String get addReportServer => 'Add Report Server';
+
+  @override
+  String get editReportServer => 'Edit Report Server';
+
+  @override
+  String get serverUrl => 'Server URL';
+
+  @override
+  String get compression => 'Compression';
+
+  @override
+  String get compressionNone => 'None';
+
+  @override
   String get newFolder => 'New Folder';
 
   @override

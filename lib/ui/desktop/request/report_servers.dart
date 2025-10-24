@@ -77,7 +77,7 @@ class _ReportServersPageState extends State<ReportServersPage> {
 
     Widget labeled(String label, Widget field, {bool expanded = true}) => Row(
           children: [
-            SizedBox(width: 85, child: Text(label)),
+            SizedBox(width: AppLocalizations.of(context)!.localeName == 'en' ? 95 : 85, child: Text(label)),
             const SizedBox(width: 12),
             expanded ? Expanded(child: field) : field,
           ],
@@ -158,7 +158,8 @@ class _ReportServersPageState extends State<ReportServersPage> {
             FilledButton(
               onPressed: () {
                 if (!(formKey.currentState as FormState).validate()) {
-                  FlutterToastr.show("${localizations.serverUrl} ${localizations.cannotBeEmpty}", context, position: FlutterToastr.top);
+                  FlutterToastr.show("${localizations.serverUrl} ${localizations.cannotBeEmpty}", context,
+                      position: FlutterToastr.top);
                   return;
                 }
 
