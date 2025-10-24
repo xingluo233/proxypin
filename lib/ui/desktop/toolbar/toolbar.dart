@@ -86,7 +86,7 @@ class _ToolbarState extends State<Toolbar> {
       const Padding(padding: EdgeInsets.only(left: 18)),
       IconButton(
           tooltip: localizations.clear,
-          icon: const Icon(Icons.cleaning_services_outlined, size: 21),
+          icon: const Icon(Icons.delete_outline, size: 21),
           onPressed: () {
             widget.requestListStateKey.currentState?.clean();
           }),
@@ -97,7 +97,7 @@ class _ToolbarState extends State<Toolbar> {
       const Padding(padding: EdgeInsets.only(left: 18)),
       IconButton(
           tooltip: localizations.mobileConnect,
-          icon: const Icon(Icons.phone_iphone, size: 21),
+          icon: const Icon(Icons.phone_iphone_outlined, size: 21),
           onPressed: () async {
             final ips = await localIps(readCache: false);
             phoneConnect(ips, widget.proxyServer.port);
