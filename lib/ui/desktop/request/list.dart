@@ -35,6 +35,7 @@ import 'package:proxypin/utils/listenable_list.dart';
 
 import '../../component/model/search_model.dart';
 import 'domians.dart';
+import 'package:proxypin/ui/desktop/request/report_servers.dart';
 
 /// @author wanghongen
 class DesktopRequestListWidget extends StatefulWidget {
@@ -53,6 +54,7 @@ class DesktopRequestListWidget extends StatefulWidget {
 class DesktopRequestListState extends State<DesktopRequestListWidget> with AutomaticKeepAliveClientMixin {
   final GlobalKey<RequestSequenceState> requestSequenceKey = GlobalKey<RequestSequenceState>();
   final GlobalKey<DomainWidgetState> domainListKey = GlobalKey<DomainWidgetState>();
+  final GlobalKey<SearchState> searchKey = GlobalKey<SearchState>();
 
   //请求列表容器
   ListenableList<HttpRequest> container = ListenableList();
@@ -95,7 +97,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
               automaticallyImplyLeading: false,
               actions: [popupMenus()],
             ),
-            bottomNavigationBar: Search(onSearch: search),
+            bottomNavigationBar: Search(key: searchKey, onSearch: search),
             body: Padding(
                 padding: const EdgeInsets.only(right: 5),
                 child: TabBarView(physics: const NeverScrollableScrollPhysics(), children: [
@@ -120,21 +122,28 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
         itemBuilder: (BuildContext context) {
           return <PopupMenuEntry>[
             CustomPopupMenuItem(
-                height: 35,
+                height: 37,
+                onTap: () => searchKey.currentState?.searchDialog(),
+                child: IconText(
+                    icon: const Icon(Icons.search, size: 17),
+                    text: localizations.search,
+                    textStyle: const TextStyle(fontSize: 13))),
+            CustomPopupMenuItem(
+                height: 37,
                 onTap: () => export('ProxyPin_${DateTime.now().dateFormat()}.har'),
                 child: IconText(
                     icon: const Icon(Icons.share, size: 16),
                     text: localizations.viewExport,
                     textStyle: const TextStyle(fontSize: 13))),
             CustomPopupMenuItem(
-                height: 35,
+                height: 37,
                 onTap: () => repeatAllRequests(),
                 child: IconText(
                     icon: const Icon(Icons.repeat, size: 16),
                     text: localizations.repeatAllRequests,
                     textStyle: const TextStyle(fontSize: 13))),
             CustomPopupMenuItem(
-                height: 35,
+                height: 37,
                 onTap: () {
                   sortDesc = !sortDesc;
                   requestSequenceKey.currentState?.sort(sortDesc);
@@ -144,6 +153,15 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
                     icon: const Icon(Icons.sort, size: 16),
                     text: sortDesc ? localizations.timeAsc : localizations.timeDesc,
                     textStyle: const TextStyle(fontSize: 13))),
+            CustomPopupMenuItem(
+                height: 37,
+                onTap: () {
+                  showReportServersDialog(context);
+                },
+                child: IconText(
+                    icon: Icon(Icons.cloud_upload_outlined, size: 16),
+                    text: localizations.reportServers,
+                    textStyle: TextStyle(fontSize: 13))),
           ];
         });
   }
@@ -205,7 +223,7 @@ class DesktopRequestListState extends State<DesktopRequestListWidget> with Autom
   }
 
   ///导出
-  export(String fileName) async {
+  Future<void> export(String fileName) async {
     var path = await FilePicker.platform.saveFile(fileName: fileName);
     if (path == null) {
       return;

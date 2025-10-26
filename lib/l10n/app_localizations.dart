@@ -504,6 +504,12 @@ abstract class AppLocalizations {
   /// **'Status code'**
   String get statusCode;
 
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
   /// No description provided for @done.
   ///
   /// In en, this message translates to:
@@ -701,6 +707,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New'**
   String get newBuilt;
+
+  /// No description provided for @reportServers.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Servers'**
+  String get reportServers;
+
+  /// No description provided for @addReportServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Report Server'**
+  String get addReportServer;
+
+  /// No description provided for @editReportServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Report Server'**
+  String get editReportServer;
+
+  /// No description provided for @serverUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Server URL'**
+  String get serverUrl;
+
+  /// No description provided for @compression.
+  ///
+  /// In en, this message translates to:
+  /// **'Compression'**
+  String get compression;
+
+  /// No description provided for @compressionNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get compressionNone;
 
   /// No description provided for @newFolder.
   ///
